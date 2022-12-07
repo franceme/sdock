@@ -53,6 +53,7 @@ class dock:
     macaddress: str = None
     postClean: bool = False
     preClean: bool = False
+    extra: str = None
 
     def clean(self):
         return "; ".join([
@@ -91,8 +92,8 @@ class dock:
             '-v "{0}:{1}"'.format(use_dir, self.mountto),
             exchanged,
             getPort(self.ports),
-            # flags or '',
             '--mac-address ' + str(self.macaddress) if self.macaddress else '',
+            self.extra if self.extra else '',
             self.image,
             self.cmd or '/bin/bash'
         ]) + str(self.clean()+";" if self.postClean else "")
