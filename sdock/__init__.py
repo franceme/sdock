@@ -46,6 +46,7 @@ class dock:
     sudo: bool = False
     remove: bool = True
     mountto: str = "/sync"
+    mountfrom: str = None
     name: str = "current_running"
     login: bool = False
     loggout: bool = False
@@ -83,7 +84,7 @@ class dock:
             exchanged = ""
 
         dir = '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
-        use_dir = "$EXCHANGE_PATH" if self.shared else dir
+        use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom else dir)
 
         return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
             dockerInDocker,
