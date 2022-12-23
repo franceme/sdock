@@ -87,6 +87,11 @@ class dock:
         dir = '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
         use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom else dir)
 
+        if self.nocmd:
+            cmd = ''
+        else self.nocmd:
+            cmd = self.cmd or '/bin/bash'
+
         return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
             dockerInDocker,
             '--rm' if self.remove else '',
@@ -97,7 +102,7 @@ class dock:
             '--mac-address ' + str(self.macaddress) if self.macaddress else '',
             self.extra if self.extra else '',
             self.image,
-            '' if self.nocmd else (self.cmd or '/bin/bash')
+            cmd
         ]) + str(self.clean()+";" if self.postClean else "")
 
     def __str__(self):
