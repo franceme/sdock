@@ -89,7 +89,7 @@ class dock:
 
         if self.nocmd:
             cmd = ''
-        else self.nocmd:
+        else:
             cmd = self.cmd or '/bin/bash'
 
         return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
