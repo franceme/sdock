@@ -97,7 +97,7 @@ class dock:
             '--mac-address ' + str(self.macaddress) if self.macaddress else '',
             self.extra if self.extra else '',
             self.image,
-            '' if self.nocmd else self.cmd or '/bin/bash'
+            '' if self.nocmd else (self.cmd or '/bin/bash')
         ]) + str(self.clean()+";" if self.postClean else "")
 
     def __str__(self):
