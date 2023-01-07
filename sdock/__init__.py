@@ -41,6 +41,7 @@ class dock:
     ports: list = field(default_factory=list)
     cmd: str = None
     nocmd: bool = False
+    nonet: bool = False
     dind: bool = False
     shared: bool = False
     detach: bool = False
@@ -92,12 +93,17 @@ class dock:
         else:
             cmd = self.cmd or '/bin/bash'
 
+        network = ""
+        if self.nonet:
+            network = "--network none" #https://docs.docker.com/network/none/
+
         return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
             dockerInDocker,
             '--rm' if self.remove else '',
             '-d' if self.detach else '-it',
             '-v "{0}:{1}"'.format(use_dir, self.mountto),
             exchanged,
+            network,
             getPort(self.ports),
             '--mac-address ' + str(self.macaddress) if self.macaddress else '',
             self.extra if self.extra else '',
