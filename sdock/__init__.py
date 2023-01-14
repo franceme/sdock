@@ -146,7 +146,7 @@ class vb:
 		exe(cmd)
 
 	def vbexe(self, cmd):
-		exe("{0} guestcontrol {1} run {cmd}".format(self.vboxmanage, self.vmname, file, self.username))
+		exe("{0} guestcontrol {1} run {cmd}".format(self.vboxmanage, self.vmname, cmd))
 
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
