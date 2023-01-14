@@ -187,3 +187,11 @@ class vb:
     
     def uploadfile(self, file:str):
         exe("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username))
+    
+    def destroy(self, deletefiles:bool=True):
+        cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.vmname)
+
+        if deletefiles:
+            cmd += " --delete"
+
+        exe(cmd)
