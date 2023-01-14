@@ -1,6 +1,7 @@
 import os, sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import List
 
 def open_port():
 	"""
@@ -132,7 +133,7 @@ class vb:
 	cpu: int = 2
 	ram: int = 4096
 	sharedfolder: str = None
-	uploadfiles: list = []
+	uploadfiles: List = field(default_factory=lambda: [])
 	vboxmanage: str = "VBoxManage"
 
 	def __shared_folder(self, folder):
