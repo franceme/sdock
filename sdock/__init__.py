@@ -157,7 +157,7 @@ class vb:
 
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
 
-		if network is None:
+		if self.network is None:
 			network = "null"
 		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
