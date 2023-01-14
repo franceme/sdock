@@ -135,6 +135,18 @@ class vb:
 	sharedfolder: str = None
 	uploadfiles: List = field(default_factory=lambda: [])
 	vboxmanage: str = "VBoxManage"
+	cmds_to_exe_with_network: List = field(default_factory=lambda: [])
+	cmds_to_exe_without_network: List = field(default_factory=lambda: [])
+
+	def vbexe(self, cmd, disable_network:bool=True):
+		if disable_network:
+			exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+
+		exe("{0} guestcontrol {1} run {cmd}".format(self.vboxmanage, self.vmname, file, self.username))
+		
+		if disable_network:
+			exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+
 
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
@@ -180,6 +192,12 @@ class vb:
 			cmd += " --type headless"
 
 		exe(cmd)
+
+		for cmd in cmds_to_exe_with_network:
+			self.vbexe(cmd, disable_network=False)
+
+		for cmd in cmds_to_exe_without_network:
+			self.vbexe(cmd)
 	
 	def __enter__(self):
 		self.run(True)
