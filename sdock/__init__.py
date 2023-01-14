@@ -114,6 +114,9 @@ class dock:
     def __str__(self):
         return self.string()
 
+def exe(string):
+    print(string)
+    os.system(string)
 
 @dataclass
 class vb:
@@ -129,3 +132,50 @@ class vb:
     cpu: int = 2
     ram: int = 4096
     sharedfolder: str = None
+    vboxmanage: str = "VBoxManage"
+
+    def __shared_folder(self, folder):
+	    exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount -make disable".format(self.vboxmanage, self.vmname, folder))
+
+    def import_ova(self, ovafile):
+        self.ovafile = ovafile
+
+        exe("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram))
+
+    def disable(self):
+        if self.disablehosttime:
+            exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
+
+	    if self.biosoffset or self.vmdate:
+            offset_bios_by = None
+            exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, offset_bios_by))
+
+        if network is None:
+            network = "null"
+        exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
+
+    def run(self, headless:bool = True):
+        if self.ovafile:
+            self.import_ova(self.ovafile)
+
+        self.disable()
+        if self.sharedfolder:
+            self.__shared_folder(self.sharedfolder)
+
+        cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
+        if headless:
+            cmd += " --type headless"
+
+        exe(cmd)
+    
+    def __enter__(self):
+        self.run(True)
+    
+    def stop(self):
+        exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
+
+    def __exit__(self, type, value, traceback):
+        self.stop()
+    
+    def uploadfile(self, file:str):
+        exe("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username))
