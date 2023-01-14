@@ -1,6 +1,6 @@
 import os, sys
 from dataclasses import dataclass, field
-
+from datetime import datetime
 
 def open_port():
     """
@@ -146,9 +146,14 @@ class vb:
         if self.disablehosttime:
             exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
 
-	    if self.biosoffset or self.vmdate:
-            offset_bios_by = None
-            exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, offset_bios_by))
+	    if self.biosoffset:
+            exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset))
+
+        if self.vmdate:
+            TO_DATE = datetime.strptime(self.vmdate, '%m/%d/%y')
+            ms = round((TO_DATE - datetime.utcnow()).total_seconds()*1000)
+
+            exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
 
         if network is None:
             network = "null"
