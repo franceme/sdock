@@ -154,13 +154,16 @@ class vb:
             network = "null"
         exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
-    def run(self, headless:bool = True):
+    def prep(self):
         if self.ovafile:
             self.import_ova(self.ovafile)
 
         self.disable()
         if self.sharedfolder:
             self.__shared_folder(self.sharedfolder)
+
+    def run(self, headless:bool = True):
+        self.prep()
 
         cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
         if headless:
