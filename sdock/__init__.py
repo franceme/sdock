@@ -132,6 +132,7 @@ class vb:
 	cpu: int = 2
 	ram: int = 4096
 	sharedfolder: str = None
+	uploadfiles: list = []
 	vboxmanage: str = "VBoxManage"
 
 	def __shared_folder(self, folder):
@@ -166,6 +167,9 @@ class vb:
 		self.disable()
 		if self.sharedfolder:
 			self.__shared_folder(self.sharedfolder)
+		
+		for file in self.uploadfiles:
+			self.uploadfile(file)
 
 	def run(self, headless:bool = True):
 		self.prep()
