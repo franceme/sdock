@@ -137,7 +137,7 @@ class vb:
 	vboxmanage: str = "VBoxManage"
 
 	def __shared_folder(self, folder):
-		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount -make disable".format(self.vboxmanage, self.vmname, folder))
+		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
 
 	def import_ova(self, ovafile):
 		self.ovafile = ovafile
