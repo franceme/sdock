@@ -113,3 +113,19 @@ class dock:
 
     def __str__(self):
         return self.string()
+
+
+@dataclass
+class vb:
+    """Class for keeping track of an item in inventory."""
+    vmname: str = "takenname"
+    username: str = None
+    ovafile: str = None
+    isofile: str = None
+    disablehosttime: bool = True
+    biosoffset: str = None
+    vmdate: str = None
+    network: str = None
+    cpu: int = 2
+    ram: int = 4096
+    sharedfolder: str = None
