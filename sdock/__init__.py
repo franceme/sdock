@@ -184,14 +184,13 @@ class vb:
 		for file in self.uploadfiles:
 			self.uploadfile(file)
 		
-
 		self.start()
-		for cmd in cmds_to_exe_with_network:
+		for cmd in self.cmds_to_exe_with_network:
 			self.vbexe(cmd)
 
 		#Disable the Network
 		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
-		for cmd in cmds_to_exe_without_network:
+		for cmd in self.cmds_to_exe_without_network:
 			self.vbexe(cmd)
 
 		#Turn on the Network
