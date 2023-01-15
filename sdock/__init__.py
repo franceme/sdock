@@ -137,6 +137,7 @@ class vb:
 	vboxmanage: str = "VBoxManage"
 	cmds_to_exe_with_network: List = field(default_factory=lambda: [])
 	cmds_to_exe_without_network: List = field(default_factory=lambda: [])
+	min_to_wait: int = 2
 
 	def start(self,headless:bool=True):
 		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
@@ -144,9 +145,16 @@ class vb:
 			cmd += " --type headless"
 
 		exe(cmd)
+		import time;time.sleep(self.min_to_wait*60)
 
 	def vbexe(self, cmd):
-		exe("{0} guestcontrol {1} run {2}".format(self.vboxmanage, self.vmname, cmd))
+		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
+		
+		if self.username:
+			string += " --username {0} ".format(self.username)
+
+		string += str(" --exe \"C:\\Windows\\System32\\cmd.exe\" -- cmd.exe/arg0 /C '" + cmd.replace("'","\'") + "'")
+		exe(string)
 
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
