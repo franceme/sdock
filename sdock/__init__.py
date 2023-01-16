@@ -290,7 +290,7 @@ class vagrant(vb):
 			cpu = self.cpu,
 			ram = self.ram,
 			sharedfolder = None,
-			uploadfiles = self.uploadfiles,
+			uploadfiles = None, #self.uploadfiles,
 			vboxmanage = "VBoxManage",
 			cmds_to_exe_with_network = self.cmds_to_exe_with_network,
 			cmds_to_exe_without_network = self.cmds_to_exe_without_network,
