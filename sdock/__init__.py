@@ -258,7 +258,7 @@ class vagrant(vb):
 		python_packages:list = None,
 		vb_path: str = None
 	):
-
+		print(uploadfiles)
 		self.vagrant_base = vagrant_base
 		self.disablehosttime = disablehosttime
 		self.biosoffset = biosoffset
@@ -277,6 +277,7 @@ class vagrant(vb):
 		self.python_packages = python_packages or []
 		self.vagrantfile = None
 		self.vb_path = vb_path
+		print(self.uploadfiles)
 
 		super().__init__(
 			vmname = None,
