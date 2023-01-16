@@ -228,3 +228,138 @@ class vb:
 			cmd += " --delete"
 
 		exe(cmd)
+
+class vagrant(vb):
+	def __init__(self,
+		vmname: str = "takenname",
+		vagrant_base:str = "talisker/windows10pro",
+		disablehosttime: bool = True,
+		biosoffset: str = None,
+		vmdate: str = None,
+		network: str = None,
+		cpu: int = 2,
+		ram: int = 4096,
+		sharedfolder: str = None,
+		uploadfiles: List = field(default_factory=lambda: []),
+		scripts_to_run: List = field(default_factory=lambda: []),
+		cmds_to_exe_with_network: List = field(default_factory=lambda: []),
+		cmds_to_exe_without_network: List = field(default_factory=lambda: []),
+		min_to_wait: int = 2,
+		choco_packages: List = field(default_factory=lambda: []),
+		no_python: bool = False,
+		python_packages: List = field(default_factory=lambda: [])
+	):
+
+		self.vmname = vmname
+		self.vagrant_base = vagrant_base
+		self.disablehosttime = disablehosttime
+		self.biosoffset = biosoffset
+		self.vmdate = vmdate
+		self.network = network
+		self.cpu = cpu
+		self.ram = ram
+		self.sharedfolder = sharedfolder
+		self.scripts_to_run = scripts_to_run
+		self.cmds_to_exe_with_network = cmds_to_exe_with_network
+		self.cmds_to_exe_without_network = cmds_to_exe_without_network
+		self.min_to_wait = min_to_wait
+		self.choco_packages = choco_packages
+		self.no_python = no_python
+		self.python_packages = python_packages
+		self.vagrantfile = None
+
+		super(vb, self).__init__(
+			vmname = self.vmname,
+			username = "vagrant",
+			ovafile = None,
+			isofile = None,
+			disablehosttime = True,
+			biosoffset = None,
+			vmdate = None,
+			network = None,
+			cpu = self.cpu,
+			ram = self.ram,
+			sharedfolder = None,
+			uploadfiles = field(default_factory=lambda: []),
+			vboxmanage = "VBoxManage",
+			cmds_to_exe_with_network = field(default_factory=lambda: []),
+			cmds_to_exe_without_network = field(default_factory=lambda: []),
+			min_to_wait = 2,
+		)
+
+	def create_vagrant_file(self):
+		uploading_file_strings = []
+		for foil in self.uploadfiles:
+			uploading_file_strings += [
+				""" win10.vm.provision "file", source: "{0}", destination: "C:\\Users\\vagrant\\Desktop\\{0}" """.format(foil)
+			]
+		
+		scripts = []
+		for script in self.scripts_to_run:
+			scripts += [
+				"""win10.vm.provision "shell", inline: <<-SHELL
+{0}
+SHELL""".format(script)
+			]
+		
+		if not self.no_python and self.python_packages != []:
+			self.choco_packages += [
+				"python38"
+			]
+
+		if self.choco_packages:
+			choco_script = """[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
+			"""
+
+			for choco_package in self.choco_packages:
+				choco_script += """ choco install -y {0} \n""".format(choco_package)	
+			
+			scripts += [choco_script]
+
+		if self.python_packages != []:
+			scripts += [
+				""" win10.vm.provision :shell, :inline => "python -m pip install --upgrade pip {0} """.format(" ".join(self.python_packages))
+			]
+
+		contents = """# -*- mode: ruby -*- 
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+	config.vm.define "win10" do |win10| 
+    	win10.vm.box = "{0}"
+		{1}
+		{2}
+	end
+end
+""".format(
+	self.vagrant_base,
+	"\n".join(uploading_file_strings),
+	"\n".join(scripts)
+)
+		with open("Vagrantfile", "w+") as vagrantfile
+			vagrantfile.write(contents)
+
+		self.vagrantfile = "Vagrantfile"
+
+	def von(self):
+		exe(""" vagrant up""")
+	
+	def voff(self):
+		exe(""" vagrant destroy -f """)
+	
+	def vhalt(self):
+		exe(""" vagrant halt """)
+	
+	def prep(self):
+		self.create_vagrant_file()
+		self.von()
+		self.vhalt()
+		pass
+	
+	def destroy(self):
+		self.voff()
+		exe("rm Vagrantfile")
+		exe("yes|rm -r .vagrant/")
+		super.destroy()
+
