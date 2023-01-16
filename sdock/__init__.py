@@ -398,5 +398,7 @@ end
 		exe(""" vagrant destroy -f """)
 		exe("rm Vagrantfile")
 		exe("yes|rm -r .vagrant/")
+		for foil in self.uploadfiles:
+			exe("rm {0}".format(foil))
 		#super().destroy()
 
