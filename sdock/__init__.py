@@ -312,10 +312,10 @@ SHELL""".format(script)
 			choco_script = """win10.vm.provision "shell", inline: <<-SHELL
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
-			"""
+"""
 
 			for choco_package in self.choco_packages:
-				choco_script += """ choco install -y {0} \n""".format(choco_package)	
+				choco_script += """choco install -y {0} \n""".format(choco_package)	
 			
 			choco_script + """
 SHELL"""
@@ -324,7 +324,7 @@ SHELL"""
 
 		if self.python_packages != []:
 			scripts += [
-				""" win10.vm.provision :shell, :inline => "python -m pip install --upgrade pip {0} """.format(" ".join(self.python_packages))
+				""" win10.vm.provision :shell, :inline => "python -m pip install --upgrade pip {0} " """.format(" ".join(self.python_packages))
 			]
 
 		contents = """# -*- mode: ruby -*- 
