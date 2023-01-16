@@ -386,7 +386,7 @@ end
 		exe(""" vagrant up""")
 		exe(""" vagrant halt """)
 		self.vagrant_name
-		time.sleep(min_to_wait * 60)
+		time.sleep(self.min_to_wait * 60)
 		super().prep()
 		pass
 	
