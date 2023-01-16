@@ -274,7 +274,7 @@ class vagrant(vb):
 			vboxmanage = "VBoxManage",
 			cmds_to_exe_with_network = cmds_to_exe_with_network or [],
 			cmds_to_exe_without_network = cmds_to_exe_without_network or [],
-			min_to_wait = 2,
+			min_to_wait = min_to_wait,
 		)
 
 		self.vagrant_base = vagrant_base
@@ -295,6 +295,7 @@ class vagrant(vb):
 		self.python_packages = python_packages or []
 		self.vagrantfile = None
 		self.vb_path = vb_path
+		self.min_to_wait = min_to_wait
 
 	@property
 	def vagrant_name(self):
@@ -314,7 +315,6 @@ class vagrant(vb):
 		return vag_name
 
 	def create_vagrant_file(self):
-		print(self.uploadfiles)
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
 			uploading_file_strings += [
@@ -386,6 +386,7 @@ end
 		exe(""" vagrant up""")
 		exe(""" vagrant halt """)
 		self.vagrant_name
+		time.sleep(min_to_wait * 60)
 		super().prep()
 		pass
 	
