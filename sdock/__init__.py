@@ -173,6 +173,9 @@ class vb:
 
 		exe("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram))
 
+	def disable_network(self):
+		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+
 	def disable(self):
 		if self.disablehosttime:
 			exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
@@ -202,20 +205,23 @@ class vb:
 		if upload_files:
 			for file in self.uploadfiles:
 				self.uploadfile(file)
-		
-		self.start()
-		for cmd in self.cmds_to_exe_with_network:
-			self.vbexe(cmd)
 
-		self.stop()
+		if self.cmds_to_exe_with_network and len(self.cmds_to_exe_with_network) > 0:
+			with self():
+				self.start()
+				for cmd in self.cmds_to_exe_with_network:
+					self.vbexe(cmd)
+				self.stop()
 
 		#Disable the Network
 		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
-		self.start()
-		for cmd in self.cmds_to_exe_without_network:
-			self.vbexe(cmd)
+		if self.cmds_to_exe_without_network and len(self.cmds_to_exe_without_network) > 0:
+			with self():
+				self.start()
+				for cmd in self.cmds_to_exe_without_network:
+					self.vbexe(cmd)
+				self.stop()
 
-		self.stop()
 		#Turn on the Network
 		exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
 
@@ -224,7 +230,7 @@ class vb:
 		self.start(headless)
 	
 	def __enter__(self):
-		self.run(True)
+		self.start(True)
 	
 	def stop(self):
 		exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
@@ -381,6 +387,8 @@ end
 
 	def start(self):
 		self.vagrant_name
+		if self.disable_network:
+			super().disable_network()
 		super().start()
 
 	def off(self):
