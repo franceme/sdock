@@ -355,6 +355,7 @@ end
 		self.create_vagrant_file()
 		self.von()
 		self.vhalt()
+		super.run()
 		pass
 	
 	def destroy(self):
