@@ -302,6 +302,9 @@ class vagrant(vb):
 		from glob import glob as re
 		folder_name = os.path.basename(os.path.abspath(os.curdir))
 		
+		print(folder_name + "*")
+		print(re(folder_name + "*"))
+
 		vag_name = os.path.abspath(re(folder_name + "*")[0])
 		super().vmname = vag_name
 
