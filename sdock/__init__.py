@@ -277,8 +277,6 @@ class vagrant(vb):
 		self.python_packages = python_packages or []
 		self.vagrantfile = None
 		self.vb_path = vb_path
-		
-		print(self.uploadfiles)
 
 		super().__init__(
 			vmname = None,
@@ -317,6 +315,7 @@ class vagrant(vb):
 		return vag_name
 
 	def create_vagrant_file(self):
+		print(self.uploadfiles)
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
 			uploading_file_strings += [
