@@ -33,7 +33,6 @@ def getPort(ports=[], prefix="-p"):
 		f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
 	])
 
-
 @dataclass
 class dock:
 	"""Class for keeping track of an item in inventory."""
@@ -231,7 +230,6 @@ class vb:
 
 class vagrant(vb):
 	def __init__(self,
-		vmname: str = "takenname",
 		vagrant_base:str = "talisker/windows10pro",
 		disablehosttime: bool = True,
 		biosoffset: str = None,
@@ -247,10 +245,10 @@ class vagrant(vb):
 		min_to_wait: int = 2,
 		choco_packages:list = None,
 		no_python: bool = False,
-		python_packages:list = None
+		python_packages:list = None,
+		vb_path: str = None
 	):
 
-		self.vmname = vmname
 		self.vagrant_base = vagrant_base
 		self.disablehosttime = disablehosttime
 		self.biosoffset = biosoffset
@@ -268,9 +266,10 @@ class vagrant(vb):
 		self.no_python = no_python
 		self.python_packages = python_packages or []
 		self.vagrantfile = None
+		self.vb_path = vb_path
 
 		super().__init__(
-			vmname = self.vmname,
+			vmname = None,
 			username = "vagrant",
 			ovafile = None,
 			isofile = None,
@@ -287,6 +286,19 @@ class vagrant(vb):
 			cmds_to_exe_without_network = self.cmds_to_exe_without_network,
 			min_to_wait = 2,
 		)
+
+	@property
+	def vagrant_name(self):
+		if not self.vb_path:
+			return
+
+		from glob import glob as re
+		folder_name = os.path.basename(os.path.abspath(os.curdir))
+		
+		vag_name = os.path.abspath(re(folder_name + "*")[0])
+		self.super.vmname = vag_name
+
+		return vag_name
 
 	def create_vagrant_file(self):
 		uploading_file_strings = []
