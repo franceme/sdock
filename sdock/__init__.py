@@ -39,7 +39,7 @@ class dock:
 	"""Class for keeping track of an item in inventory."""
 	docker: str = "docker"
 	image: str = "frantzme/pythondev:lite"
-	ports: list = []
+	ports: list = field(default_factory=list)
 	cmd: str = None
 	nocmd: bool = False
 	nonet: bool = False
@@ -133,10 +133,10 @@ class vb:
 	cpu: int = 2
 	ram: int = 4096
 	sharedfolder: str = None
-	uploadfiles:list = []
+	uploadfiles:list = field(default_factory=list)
 	vboxmanage: str = "VBoxManage"
-	cmds_to_exe_with_network:list = []
-	cmds_to_exe_without_network:list = []
+	cmds_to_exe_with_network:list = field(default_factory=list)
+	cmds_to_exe_without_network:list = field(default_factory=list)
 	min_to_wait: int = 2
 
 	def start(self,headless:bool=True):
@@ -241,13 +241,13 @@ class vagrant(vb):
 		ram: int = 4096,
 		sharedfolder: str = None,
 		uploadfiles: list = [],
-		scripts_to_run:list = [],
-		cmds_to_exe_with_network:list = [],
-		cmds_to_exe_without_network:list = [],
+		scripts_to_run:list = field(default_factory=list),
+		cmds_to_exe_with_network:list = field(default_factory=list),
+		cmds_to_exe_without_network:list = field(default_factory=list),
 		min_to_wait: int = 2,
-		choco_packages:list = [],
+		choco_packages:list = field(default_factory=list),
 		no_python: bool = False,
-		python_packages:list = []
+		python_packages:list = field(default_factory=list)
 	):
 
 		self.vmname = vmname
