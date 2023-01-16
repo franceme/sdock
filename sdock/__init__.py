@@ -380,16 +380,12 @@ end
 	def off(self):
 		self.vagrant_name
 		super().stop()
-
-	def von(self):
-		self.vagrant_name
-		exe(""" vagrant up""")
 	
 	def prep(self):
-		self.vagrant_name
 		self.create_vagrant_file()
 		exe(""" vagrant up""")
 		exe(""" vagrant halt """)
+		self.vagrant_name
 		super().prep()
 		pass
 	
