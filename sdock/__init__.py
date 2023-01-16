@@ -145,6 +145,9 @@ class vb:
 	cmds_to_exe_without_network:list = field(default_factory=list)
 	min_to_wait: int = 2
 
+	def set_vmname(self, vmname):
+		self.vmname = vmname
+
 	def start(self,headless:bool=True):
 		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
 		if headless:
@@ -307,7 +310,7 @@ class vagrant(vb):
 				vag_name = item.split('/')[-1].strip()
 
 		print(vag_name)
-		super().vmname = vag_name
+		super().set_vmname(vag_name)
 
 		return vag_name
 
