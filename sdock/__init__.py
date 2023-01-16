@@ -173,9 +173,6 @@ class vb:
 
 		exe("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram))
 
-	def disable_network(self):
-		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
-
 	def disable(self):
 		if self.disablehosttime:
 			exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
@@ -385,11 +382,10 @@ end
 
 		self.vagrantfile = "Vagrantfile"
 
-	def start(self):
+	def start(self,headless=True):
 		self.vagrant_name
-		if self.disable_network:
-			super().disable_network()
-		super().start()
+		super().disable()
+		super().start(headless=headless)
 
 	def off(self):
 		self.vagrant_name
