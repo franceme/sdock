@@ -277,6 +277,8 @@ class vagrant(vb):
 		self.python_packages = python_packages or []
 		self.vagrantfile = None
 		self.vb_path = vb_path
+		
+		print(self.uploadfiles)
 
 		super().__init__(
 			vmname = None,
