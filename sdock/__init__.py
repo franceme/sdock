@@ -207,14 +207,17 @@ class vb:
 		for cmd in self.cmds_to_exe_with_network:
 			self.vbexe(cmd)
 
+		self.stop()
+
 		#Disable the Network
 		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+		self.start()
 		for cmd in self.cmds_to_exe_without_network:
 			self.vbexe(cmd)
 
+		self.stop()
 		#Turn on the Network
 		exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
-		self.stop()
 
 	def run(self, headless:bool = True):
 		self.prep()
@@ -225,6 +228,7 @@ class vb:
 	
 	def stop(self):
 		exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
+		time.sleep(self.min_to_wait*60)
 
 	def __exit__(self, type, value, traceback):
 		self.stop()
