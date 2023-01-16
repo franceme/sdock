@@ -337,7 +337,7 @@ end
 	"\n".join(uploading_file_strings),
 	"\n".join(scripts)
 )
-		with open("Vagrantfile", "w+") as vagrantfile
+		with open("Vagrantfile", "w+") as vagrantfile:
 			vagrantfile.write(contents)
 
 		self.vagrantfile = "Vagrantfile"
