@@ -317,7 +317,7 @@ iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)
 			for choco_package in self.choco_packages:
 				choco_script += """choco install -y {0} \n""".format(choco_package)	
 			
-			choco_script + """
+			choco_script += """
 SHELL"""
 
 			scripts += [choco_script]
