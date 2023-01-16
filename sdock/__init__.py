@@ -240,14 +240,14 @@ class vagrant(vb):
 		cpu: int = 2,
 		ram: int = 4096,
 		sharedfolder: str = None,
-		uploadfiles: list = [],
-		scripts_to_run:list = field(default_factory=list),
-		cmds_to_exe_with_network:list = field(default_factory=list),
-		cmds_to_exe_without_network:list = field(default_factory=list),
+		uploadfiles: list,
+		scripts_to_run:list,
+		cmds_to_exe_with_network:list,
+		cmds_to_exe_without_network:list,
 		min_to_wait: int = 2,
-		choco_packages:list = field(default_factory=list),
+		choco_packages:list,
 		no_python: bool = False,
-		python_packages:list = field(default_factory=list)
+		python_packages:list
 	):
 
 		self.vmname = vmname
@@ -259,14 +259,14 @@ class vagrant(vb):
 		self.cpu = cpu
 		self.ram = ram
 		self.sharedfolder = sharedfolder
-		self.uploadfiles = uploadfiles
-		self.scripts_to_run = scripts_to_run
-		self.cmds_to_exe_with_network = cmds_to_exe_with_network
-		self.cmds_to_exe_without_network = cmds_to_exe_without_network
+		self.uploadfiles = uploadfiles or []
+		self.scripts_to_run = scripts_to_run or []
+		self.cmds_to_exe_with_network = cmds_to_exe_with_network or []
+		self.cmds_to_exe_without_network = cmds_to_exe_without_network or []
 		self.min_to_wait = min_to_wait
-		self.choco_packages = choco_packages
+		self.choco_packages = choco_packages or []
 		self.no_python = no_python
-		self.python_packages = python_packages
+		self.python_packages = python_packages or []
 		self.vagrantfile = None
 
 		super().__init__(
