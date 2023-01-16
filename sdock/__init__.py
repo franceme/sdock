@@ -299,14 +299,13 @@ class vagrant(vb):
 		if not self.vb_path:
 			return
 
-		from glob import glob as re
+		vag_name = None
+
 		folder_name = os.path.basename(os.path.abspath(os.curdir))
-		search_path = os.path.join(self.vb_path,folder_name)
+		for item in os.listdir(self.vb_path):
+			if not os.path.isfile(item) and folder_name in item:
+				vag_name = item.split('/')[-1].strip()
 
-		print(search_path + "*")
-		print(re(search_path + "*"))
-
-		vag_name = os.path.abspath(re(search_path + "*")[0])
 		super().vmname = vag_name
 
 		return vag_name
