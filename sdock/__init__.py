@@ -276,7 +276,7 @@ class vagrant(vb):
 		self.vb_path = vb_path
 
 		super().__init__(
-			vmname = self.vagrant_name,
+			vmname = None,
 			username = "vagrant",
 			ovafile = None,
 			isofile = None,
@@ -303,7 +303,7 @@ class vagrant(vb):
 		folder_name = os.path.basename(os.path.abspath(os.curdir))
 		
 		vag_name = os.path.abspath(re(folder_name + "*")[0])
-		self.super.vmname = vag_name
+		super().vmname = vag_name
 
 		return vag_name
 
@@ -367,15 +367,19 @@ end
 		self.vagrantfile = "Vagrantfile"
 
 	def start(self):
+		self.vagrant_name
 		super().start()
 
 	def off(self):
+		self.vagrant_name
 		super().stop()
 
 	def von(self):
+		self.vagrant_name
 		exe(""" vagrant up""")
 	
 	def prep(self):
+		self.vagrant_name
 		self.create_vagrant_file()
 		exe(""" vagrant up""")
 		exe(""" vagrant halt """)
@@ -383,6 +387,7 @@ end
 		pass
 	
 	def destroy(self):
+		self.vagrant_name
 		exe(""" vagrant destroy -f """)
 		exe("rm Vagrantfile")
 		exe("yes|rm -r .vagrant/")
