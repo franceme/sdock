@@ -191,6 +191,7 @@ class vb:
 		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
 	def prep(self):
+		print(self.vmname)
 		if self.ovafile:
 			self.import_ova(self.ovafile)
 
