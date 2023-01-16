@@ -240,14 +240,14 @@ class vagrant(vb):
 		cpu: int = 2,
 		ram: int = 4096,
 		sharedfolder: str = None,
-		uploadfiles: list,
-		scripts_to_run:list,
-		cmds_to_exe_with_network:list,
-		cmds_to_exe_without_network:list,
+		uploadfiles: list = None,
+		scripts_to_run:list = None,
+		cmds_to_exe_with_network:list = None,
+		cmds_to_exe_without_network:list = None,
 		min_to_wait: int = 2,
-		choco_packages:list,
+		choco_packages:list = None,
 		no_python: bool = False,
-		python_packages:list
+		python_packages:list = None
 	):
 
 		self.vmname = vmname
