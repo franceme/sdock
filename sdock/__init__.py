@@ -133,10 +133,10 @@ class vb:
 	cpu: int = 2
 	ram: int = 4096
 	sharedfolder: str = None
-	uploadfiles: List = field(default_factory=lambda: [])
+	uploadfiles:list = []
 	vboxmanage: str = "VBoxManage"
-	cmds_to_exe_with_network: List = field(default_factory=lambda: [])
-	cmds_to_exe_without_network: List = field(default_factory=lambda: [])
+	cmds_to_exe_with_network:list = []
+	cmds_to_exe_without_network:list = []
 	min_to_wait: int = 2
 
 	def start(self,headless:bool=True):
@@ -240,14 +240,14 @@ class vagrant(vb):
 		cpu: int = 2,
 		ram: int = 4096,
 		sharedfolder: str = None,
-		uploadfiles: List = field(default_factory=lambda: []),
-		scripts_to_run: List = field(default_factory=lambda: []),
-		cmds_to_exe_with_network: List = field(default_factory=lambda: []),
-		cmds_to_exe_without_network: List = field(default_factory=lambda: []),
+		uploadfiles: list = [],
+		scripts_to_run:list = [],
+		cmds_to_exe_with_network:list = [],
+		cmds_to_exe_without_network:list = [],
 		min_to_wait: int = 2,
-		choco_packages: List = field(default_factory=lambda: []),
+		choco_packages:list = [],
 		no_python: bool = False,
-		python_packages: List = field(default_factory=lambda: [])
+		python_packages:list = []
 	):
 
 		self.vmname = vmname
