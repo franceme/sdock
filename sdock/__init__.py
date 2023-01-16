@@ -259,6 +259,7 @@ class vagrant(vb):
 		self.cpu = cpu
 		self.ram = ram
 		self.sharedfolder = sharedfolder
+		self.uploadfiles = uploadfiles
 		self.scripts_to_run = scripts_to_run
 		self.cmds_to_exe_with_network = cmds_to_exe_with_network
 		self.cmds_to_exe_without_network = cmds_to_exe_without_network
