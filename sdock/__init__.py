@@ -318,7 +318,7 @@ class vagrant(vb):
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
 			uploading_file_strings += [
-				""" win10.vm.provision "file", source: "{0}", destination: "C:\\Users\\vagrant\\Desktop\\{0}" """.format(foil)
+				""" win10.vm.provision "file", source: "{0}", destination: "C:\\\\Users\\\\vagrant\\\\Desktop\\\\{0}" """.format(foil)
 			]
 		
 		scripts = []
