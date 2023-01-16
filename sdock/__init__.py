@@ -258,27 +258,6 @@ class vagrant(vb):
 		python_packages:list = None,
 		vb_path: str = None
 	):
-		print(uploadfiles)
-		self.vagrant_base = vagrant_base
-		self.disablehosttime = disablehosttime
-		self.biosoffset = biosoffset
-		self.vmdate = vmdate
-		self.network = network
-		self.cpu = cpu
-		self.ram = ram
-		self.sharedfolder = sharedfolder
-		self.uploadfiles = uploadfiles
-		self.scripts_to_run = scripts_to_run or []
-		self.cmds_to_exe_with_network = cmds_to_exe_with_network or []
-		self.cmds_to_exe_without_network = cmds_to_exe_without_network or []
-		self.min_to_wait = min_to_wait
-		self.choco_packages = choco_packages or []
-		self.no_python = no_python
-		self.python_packages = python_packages or []
-		self.vagrantfile = None
-		self.vb_path = vb_path
-		print(self.uploadfiles)
-
 		super().__init__(
 			vmname = None,
 			username = "vagrant",
@@ -293,10 +272,29 @@ class vagrant(vb):
 			sharedfolder = None,
 			uploadfiles = None, #self.uploadfiles,
 			vboxmanage = "VBoxManage",
-			cmds_to_exe_with_network = self.cmds_to_exe_with_network,
-			cmds_to_exe_without_network = self.cmds_to_exe_without_network,
+			cmds_to_exe_with_network = cmds_to_exe_with_network or [],
+			cmds_to_exe_without_network = cmds_to_exe_without_network or [],
 			min_to_wait = 2,
 		)
+
+		self.vagrant_base = vagrant_base
+		self.disablehosttime = disablehosttime
+		self.biosoffset = biosoffset
+		self.vmdate = vmdate
+		self.network = network
+		self.cpu = cpu
+		self.ram = ram
+		self.sharedfolder = sharedfolder
+		self.uploadfiles = uploadfiles or []
+		self.scripts_to_run = scripts_to_run or []
+		self.cmds_to_exe_with_network = cmds_to_exe_with_network or []
+		self.cmds_to_exe_without_network = cmds_to_exe_without_network or []
+		self.min_to_wait = min_to_wait
+		self.choco_packages = choco_packages or []
+		self.no_python = no_python
+		self.python_packages = python_packages or []
+		self.vagrantfile = None
+		self.vb_path = vb_path
 
 	@property
 	def vagrant_name(self):
