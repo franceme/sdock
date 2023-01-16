@@ -1,4 +1,4 @@
-import os, sys, requests
+import os, sys, requests, time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
@@ -154,7 +154,7 @@ class vb:
 			cmd += " --type headless"
 
 		exe(cmd)
-		import time;time.sleep(self.min_to_wait*60)
+		time.sleep(self.min_to_wait*60)
 
 	def vbexe(self, cmd):
 		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
