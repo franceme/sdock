@@ -276,7 +276,7 @@ class vagrant(vb):
 		self.vb_path = vb_path
 
 		super().__init__(
-			vmname = None,
+			vmname = self.vagrant_name,
 			username = "vagrant",
 			ovafile = None,
 			isofile = None,
