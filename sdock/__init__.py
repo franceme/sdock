@@ -306,6 +306,7 @@ class vagrant(vb):
 			if not os.path.isfile(item) and folder_name in item:
 				vag_name = item.split('/')[-1].strip()
 
+		print(vag_name)
 		super().vmname = vag_name
 
 		return vag_name
