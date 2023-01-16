@@ -367,10 +367,10 @@ end
 		self.vagrantfile = "Vagrantfile"
 
 	def start(self):
-		super.start()
+		self.super.start()
 
 	def off(self):
-		super.stop()
+		self.super.stop()
 
 	def von(self):
 		exe(""" vagrant up""")
@@ -379,11 +379,12 @@ end
 		self.create_vagrant_file()
 		exe(""" vagrant up""")
 		exe(""" vagrant halt """)
+		self.super.prep()
 		pass
 	
 	def destroy(self):
 		exe(""" vagrant destroy -f """)
 		exe("rm Vagrantfile")
 		exe("yes|rm -r .vagrant/")
-		super.destroy()
+		self.super.destroy()
 
