@@ -268,7 +268,7 @@ class vagrant(vb):
 		self.python_packages = python_packages
 		self.vagrantfile = None
 
-		super(vb, self).__init__(
+		super().__init__(
 			vmname = self.vmname,
 			username = "vagrant",
 			ovafile = None,
