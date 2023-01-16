@@ -190,7 +190,7 @@ class vb:
 			network = "null"
 		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
-	def prep(self):
+	def prep(self, upload_files=True):
 		print(self.vmname)
 		if self.ovafile:
 			self.import_ova(self.ovafile)
@@ -199,8 +199,9 @@ class vb:
 		if self.sharedfolder:
 			self.__shared_folder(self.sharedfolder)
 		
-		for file in self.uploadfiles:
-			self.uploadfile(file)
+		if upload_files:
+			for file in self.uploadfiles:
+				self.uploadfile(file)
 		
 		self.start()
 		for cmd in self.cmds_to_exe_with_network:
@@ -388,7 +389,7 @@ end
 		exe(""" vagrant halt """)
 		self.vagrant_name
 		time.sleep(self.min_to_wait * 60)
-		super().prep()
+		super().prep(False)
 		pass
 	
 	def destroy(self):
