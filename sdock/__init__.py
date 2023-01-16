@@ -39,7 +39,7 @@ class dock:
 	"""Class for keeping track of an item in inventory."""
 	docker: str = "docker"
 	image: str = "frantzme/pythondev:lite"
-	ports: list = field(default_factory=list)
+	ports: list = []
 	cmd: str = None
 	nocmd: bool = False
 	nonet: bool = False
@@ -281,10 +281,10 @@ class vagrant(vb):
 			cpu = self.cpu,
 			ram = self.ram,
 			sharedfolder = None,
-			uploadfiles = field(default_factory=lambda: []),
+			uploadfiles = self.uploadfiles,
 			vboxmanage = "VBoxManage",
-			cmds_to_exe_with_network = field(default_factory=lambda: []),
-			cmds_to_exe_without_network = field(default_factory=lambda: []),
+			cmds_to_exe_with_network = self.cmds_to_exe_with_network,
+			cmds_to_exe_without_network = self.cmds_to_exe_without_network,
 			min_to_wait = 2,
 		)
 
