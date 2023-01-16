@@ -1,7 +1,14 @@
-import os, sys
+import os, sys, requests
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
+
+def wget(url, verify=True):
+	to = url.split('/')[-1].replace('%20','_')
+	if not os.path.exists(to):
+		resp = requests.get(url, allow_redirects=True,verify=verify)
+		open(to,'wb').write(resp.content)
+	return to
 
 def open_port():
 	"""
