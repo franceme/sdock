@@ -166,7 +166,8 @@ class vb:
 			if self.internet_on:
 				exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
 
-			exe("{0} startvm {1} --type headless".format(self.vboxmanage,self.vmname))
+			#exe("{0} startvm {1} --type headless".format(self.vboxmanage,self.vmname))
+			exe("{0} startvm {1}".format(self.vboxmanage,self.vmname))
 			time.sleep(self.min_to_wait*60)
 
 		def __exit__(self, type, value, traceback):
