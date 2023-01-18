@@ -144,6 +144,35 @@ class vb:
 	cmds_to_exe_with_network:list = field(default_factory=list)
 	cmds_to_exe_without_network:list = field(default_factory=list)
 	min_to_wait: int = 2
+	choco_packages:list = field(default_factory=list)
+	python_packages:list = field(default_factory=list)
+
+	@property
+	def wrap(self):
+		return self.vb_wrap(self.vboxmanage, self.vmname,self.min_to_wait)
+
+	@property
+	def wrap_off(self):
+		return self.vb_wrap(self.vboxmanage, self.vmname,self.min_to_wait,internet_on=False)
+
+	class vb_wrap(object):
+		def __init__(self,vboxmanage,vmname,min_to_wait,internet_on=True):
+			self.vboxmanage = vboxmanage
+			self.vmname = vmname
+			self.min_to_wait = min_to_wait
+			self.internet_on = internet_on
+
+		def __enter__(self):
+			if self.internet_on:
+				exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+
+			exe("{0} startvm {1} --type headless".format(self.vboxmanage,self.vmname))
+			time.sleep(self.min_to_wait*60)
+
+		def __exit__(self, type, value, traceback):
+			exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
+			time.sleep(self.min_to_wait*60)
+			exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
 
 	def set_vmname(self, vmname):
 		self.vmname = vmname
@@ -201,7 +230,6 @@ class vb:
 		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
 	def prep(self, upload_files=True):
-		print(self.vmname)
 		if self.ovafile:
 			self.import_ova(self.ovafile)
 
@@ -214,23 +242,28 @@ class vb:
 				self.uploadfile(file)
 
 		if self.cmds_to_exe_with_network and len(self.cmds_to_exe_with_network) > 0:
-			with self():
-				self.start()
+			with self.wrap:
 				for cmd in self.cmds_to_exe_with_network:
 					self.vbexe(cmd)
-				self.stop()
 
-		#Disable the Network
-		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
 		if self.cmds_to_exe_without_network and len(self.cmds_to_exe_without_network) > 0:
-			with self():
-				self.start()
+			with self.wrap_off:
 				for cmd in self.cmds_to_exe_without_network:
 					self.vbexe(cmd)
-				self.stop()
 
-		#Turn on the Network
-		exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+		if self.python_packages and len(self.python_packages) > 0:
+			self.choco_packages += ["python38"]
+			self.python_packages += ["pip"]
+
+		if self.choco_packages and len(self.choco_packages) > 0:
+			with self.wrap:
+				for package in self.choco_packages:
+					self.vbpowershell("choco install {0} -y".format(package))
+
+		if self.python_packages and len(self.python_packages) > 0:
+			with self.wrap:
+				for package in self.python_packages:
+					self.vbpowershell("python -m pip install --upgrade {0}".format(package))
 
 	def run(self, headless:bool = True):
 		self.prep()
