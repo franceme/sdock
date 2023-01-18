@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
 
+exe_logs = False
+
 def wget(url, verify=True):
 	to = url.split('/')[-1].replace('%20','_')
 	if not os.path.exists(to):
@@ -122,6 +124,10 @@ class dock:
 		return self.string()
 
 def exe(string):
+	global exe_logs
+	if exe_logs:
+		with open("logs.txt","a+") as writer:
+			writer.write("{0}\n".format(string))
 	print(string)
 	os.system(string)
 
@@ -146,6 +152,7 @@ class vb:
 	min_to_wait: int = 2
 	choco_packages:list = field(default_factory=list)
 	python_packages:list = field(default_factory=list)
+	exe_logs: bool = False
 
 	@property
 	def wrap(self):
