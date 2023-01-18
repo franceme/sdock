@@ -149,10 +149,14 @@ class vb:
 	vboxmanage: str = "VBoxManage"
 	cmds_to_exe_with_network:list = field(default_factory=list)
 	cmds_to_exe_without_network:list = field(default_factory=list)
-	min_to_wait: int = 2
+	min_to_wait: int = 0
 	choco_packages:list = field(default_factory=list)
 	python_packages:list = field(default_factory=list)
 	exe_logs: bool = False
+
+	def __post_init__(self):
+		global exe_logs
+		exe_logs = self.exe_logs
 
 	@property
 	def wrap(self):
