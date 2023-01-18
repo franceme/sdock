@@ -165,6 +165,16 @@ class vb:
 		string += str(" --exe \"C:\\Windows\\System32\\cmd.exe\" -- cmd.exe/arg0 /C '" + cmd.replace("'","\'") + "'")
 		exe(string)
 
+	def vbpowershell(self, cmd):
+		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
+
+		string += str(" \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -- " + cmd.replace("'","\'"))
+		
+		if self.username:
+			string += " --username {0} ".format(self.username)
+
+		exe(string)
+
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"sharename\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
 
