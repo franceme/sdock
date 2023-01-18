@@ -197,10 +197,12 @@ class vb:
 	def vbpowershell(self, cmd):
 		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
 
-		string += str(" \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -- " + cmd.replace("'","\'"))
+		string += str(" \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" ")
 		
 		if self.username:
 			string += " --username {0} ".format(self.username)
+
+		string += str(" -- " + cmd.replace("'","\'"))
 
 		exe(string)
 
