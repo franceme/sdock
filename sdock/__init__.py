@@ -39,9 +39,6 @@ def getPort(ports=[], prefix="-p"):
 	])
 
 def exe(string):
-	global exe_logs
-	with open("logs.txt","a+") as writer:
-		writer.write("{0}\n".format(string))
 	print(string)
 	os.system(string)
 
