@@ -127,24 +127,7 @@ class dock:
 		return self.string()
 
 @dataclass
-class vagrant(vb):
-	"""
-	box = sdock.vagrant(
-		vagrant_base="talisker/windows10pro",
-		vmdate = datetime.date(2022, 12, 25),
-		uploadfiles = [sdock.wget(x,False) for x in [
-			'https://cdn.sw.altova.com/v2023sp1/en/MissionKitEnt2023sp1.exe',
-			'https://cdn.sw.altova.com/v2023sp1/en/MissionKitEnt2023sp1.zip',
-			'https://staruml.io/download/releases-v5/StarUML%20Setup%205.0.2.exe',
-			'https://sparxsystems.com/bin/easetup_x64.msi',
-			'https://cytranet.dl.sourceforge.net/project/dia-installer/diashapes/0.3.0/diashapes-setup-0.3.0.exe'
-		]],
-		choco_packages = ["jdk8"],
-		python_packages = ["hugg"],
-		vb_path="/Users/maister/VirtualBox VMs/",
-		headless=False
-	)
-	"""
+class vagrant(object):
 	vagrant_base:str = "talisker/windows10pro",
 	disablehosttime: bool = True,
 	vmdate: str = None,
