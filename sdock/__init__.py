@@ -127,6 +127,7 @@ class dock:
 class vagrant(object):
 	vagrant_base:str = "talisker/windows10pro",
 	disablehosttime: bool = True,
+	disablenetwork: bool = True,
 	vmdate: str = None,
 	cpu: int = 2,
 	ram: int = 4096,
@@ -139,7 +140,6 @@ class vagrant(object):
 	headless: bool = True
 
 	def __post_init__(self):
-
 		if self.uploadfiles is None or type(self.uploadfiles) is tuple:
 			self.uploadfiles = []
 
@@ -151,7 +151,6 @@ class vagrant(object):
 
 		if self.scripts_to_run is None or type(self.scripts_to_run) is tuple:
 			self.scripts_to_run = []
-
 
 	@property
 	def vagrant_name(self):
@@ -167,12 +166,24 @@ class vagrant(object):
 
 		return vag_name
 
+	#https://jd-bots.com/2021/05/15/how-to-run-powershell-script-on-windows-startup/
+	#https://stackoverflow.com/questions/20575257/how-do-i-run-a-powershell-script-when-the-computer-starts
+	def create_runner(self):
+		with open("on_login.cmd","w+") as writer:
+			writer.write("""powershell -windowstyle hidden C:\\\\Users\\\\vagrant\\\\Desktop\\\\on_start.ps1""")
+		return "on_login.cmd"
+
 	def write_startup_file(self):
 		contents = []
 		if self.vmdate:
 			diff_days = (self.vmdate - datetime.now().date()).days
 			contents += [
 				"Set-Date -Date (Get-Date).AddDays({0})".format(diff_days)
+			]
+
+		if self.disablenetwork:
+			contents += [
+				"""Disable-NetAdapter -Name "*" -Confirm:$false """
 			]
 
 		with open("on_start.ps1", "w+") as writer:
@@ -183,8 +194,8 @@ class vagrant(object):
 ))
 		return "on_start.ps1"
 
-	def add_file(self, foil):
-		return """ win10.vm.provision "file", source: "{0}", destination: "C:\\\\Users\\\\vagrant\\\\Desktop\\\\{0}" """.format(foil)
+	def add_file(self, foil, directory="C:\\\\Users\\\\vagrant\\\\Desktop"):
+		return """ win10.vm.provision "file", source: "{0}", destination: "{1}\\\\{0}" """.format(foil, directory)
 
 
 	def prep(self):		
@@ -192,6 +203,10 @@ class vagrant(object):
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
 			uploading_file_strings += [self.add_file(foil)]
+
+		uploading_file_strings += [
+			self.add_file(self.create_runner(),"""C:\\\\Users\\\\vagrant\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup""")
+		]
 
 		scripts = []
 		for script in self.scripts_to_run:
@@ -223,7 +238,7 @@ SHELL"""
 
 		if self.python_packages != []:
 			scripts += [
-				""" win10.vm.provision :shell, :inline => "python -m pip install --upgrade pip {0} " """.format(" ".join(self.python_packages))
+					""" win10.vm.provision :shell, :inline => "C:\\\\Python38\\\\python -m pip install --upgrade pip {0} " """.format(" ".join(self.python_packages))
 			]
 
 		virtualbox_scripts = [
@@ -271,8 +286,8 @@ end
 	def destroy(self):
 		self.vagrant_name
 		exe(""" vagrant destroy -f """)
-		exe("rm Vagrantfile")
-		exe("rm on_start.ps1")
+		for foil in ["Vagrant", "on_start*"]:
+			exe("rm {0}".format(foil))
 		exe("yes|rm -r .vagrant/")
 		for foil in self.uploadfiles:
 			exe("rm {0}".format(foil))
