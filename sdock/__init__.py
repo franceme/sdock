@@ -155,7 +155,7 @@ class vb:
 	#cmds_to_exe_with_network:list = field(default_factory=list)
 	#cmds_to_exe_without_network:list = field(default_factory=list)
 
-	def start(self,headless:bool=True):
+	def on(self,headless:bool=True):
 		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
 		if self.headless:
 			cmd += " --type headless"
@@ -224,12 +224,12 @@ class vb:
 
 	def run(self, headless:bool = True):
 		self.prep()
-		self.start(headless)
+		self.on(headless)
 	
 	def __enter__(self):
 		self.run(True)
 	
-	def stop(self):
+	def off(self):
 		exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
 
 	def __exit__(self, type, value, traceback):
@@ -238,11 +238,13 @@ class vb:
 	def uploadfile(self, file:str):
 		exe("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username))
 	
-	def destroy(self, deletefiles:bool=True):
+	def clean(self, deletefiles:bool=True):
 		cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.vmname)
 
 		if deletefiles:
 			cmd += " --delete"
+			if self.ovafile:
+				os.remove(self.ovafile)
 
 		exe(cmd)
 
