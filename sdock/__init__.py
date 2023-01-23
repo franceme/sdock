@@ -14,6 +14,7 @@ def extract_ova_from_zip(local_zipfile):
 	import zipfile
 
 	ovafile = os.path.basename(local_zipfile).replace('.zip','.ova')
+	cur_folder = os.path.abspath(os.curdir)
 	with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
 		zip_ref.extractall(cur_folder)
 	os.remove(local_zipfile)
