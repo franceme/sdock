@@ -10,6 +10,16 @@ def wget(url, verify=True):
 		open(to,'wb').write(resp.content)
 	return to
 
+def extract_ova_from_zip(zipfile):
+	import zipfile
+
+	cur_folder = os.path.abspath(os.curdir)
+	with zipfile.ZipFile(local_zip_file,"r") as zip_ref:
+		zip_ref.extractall(cur_folder)
+	os.remove(zipfile)
+
+	return os.path.exists(zipfile.replace('.zip','.ova'))
+
 def open_port():
 	"""
 	https://gist.github.com/jdavis/4040223
