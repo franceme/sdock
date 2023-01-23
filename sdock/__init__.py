@@ -286,7 +286,7 @@ end
 	def destroy(self):
 		self.vagrant_name
 		exe(""" vagrant destroy -f """)
-		for foil in ["Vagrant", "on_start*"]:
+		for foil in ["Vagrant", "on_start*", "on_login*"]:
 			exe("rm {0}".format(foil))
 		exe("yes|rm -r .vagrant/")
 		for foil in self.uploadfiles:
