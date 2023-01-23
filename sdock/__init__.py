@@ -150,12 +150,13 @@ class vb:
 	sharedfolder: str = None
 	uploadfiles:list = field(default_factory=list)
 	vboxmanage: str = "VBoxManage"
+	headless: bool = True
 	#cmds_to_exe_with_network:list = field(default_factory=list)
 	#cmds_to_exe_without_network:list = field(default_factory=list)
 
 	def start(self,headless:bool=True):
 		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
-		if headless:
+		if self.headless:
 			cmd += " --type headless"
 
 		exe(cmd)
