@@ -14,10 +14,11 @@ def extract_ova_from_zip(local_zipfile):
 	import zipfile
 
 	ovafile = os.path.basename(local_zipfile).replace('.zip','.ova')
-	cur_folder = os.path.abspath(os.curdir)
-	with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
-		zip_ref.extractall(cur_folder)
-	os.remove(local_zipfile)
+	if not os.path.exists(ovafile):
+		cur_folder = os.path.abspath(os.curdir)
+		with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
+			zip_ref.extractall(cur_folder)
+		os.remove(local_zipfile)
 
 	return ovafile if os.path.exists(ovafile) else None
 
@@ -186,8 +187,7 @@ class vb:
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset))
 
 		if self.vmdate:
-			TO_DATE = datetime.strptime(self.vmdate, '%m/%d/%Y')
-			ms = round((TO_DATE - datetime.utcnow()).total_seconds()*1000)
+			ms = round((datetime - datetime.utcnow()).total_seconds()*1000)
 
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
 
@@ -219,6 +219,8 @@ class vb:
 			#Turn on the Network
 			exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
 			self.stop()
+		
+		self.disable()
 
 	def run(self, headless:bool = True):
 		self.prep()
