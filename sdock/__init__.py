@@ -167,20 +167,32 @@ class vagrant(object):
 
 		return vag_name
 
-	def prep(self):
+	def write_startup_file(self):
+		contents = []
 		if self.vmdate:
 			diff_days = (self.vmdate - datetime.now().date()).days
-			self.scripts_to_run += [
+			contents += [
 				"Set-Date -Date (Get-Date).AddDays({0})".format(diff_days)
 			]
 
-		
+		with open("on_start.ps1", "w+") as writer:
+			writer.write("""
+{0}
+""".format(
+	"\n".join(contents)
+))
+		return "on_start.ps1"
+
+	def add_file(self, foil):
+		return """ win10.vm.provision "file", source: "{0}", destination: "C:\\\\Users\\\\vagrant\\\\Desktop\\\\{0}" """.format(foil)
+
+
+	def prep(self):		
+		self.uploadfiles += [self.write_startup_file()]
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
-			uploading_file_strings += [
-				""" win10.vm.provision "file", source: "{0}", destination: "C:\\\\Users\\\\vagrant\\\\Desktop\\\\{0}" """.format(foil)
-			]
-		
+			uploading_file_strings += [self.add_file(foil)]
+
 		scripts = []
 		for script in self.scripts_to_run:
 			if script:
@@ -260,6 +272,7 @@ end
 		self.vagrant_name
 		exe(""" vagrant destroy -f """)
 		exe("rm Vagrantfile")
+		exe("rm on_start.ps1")
 		exe("yes|rm -r .vagrant/")
 		for foil in self.uploadfiles:
 			exe("rm {0}".format(foil))
