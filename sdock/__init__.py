@@ -187,7 +187,7 @@ class vb:
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset))
 
 		if self.vmdate:
-			ms = round((datetime - datetime.now().date()).total_seconds()*1000)
+			ms = round((self.vmdate - datetime.now().date()).total_seconds()*1000)
 
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
 
