@@ -141,6 +141,7 @@ class vb:
 	username: str = None
 	ovafile: str = None
 	disablehosttime: bool = True
+	disablenetwork: bool = True
 	biosoffset: str = None
 	vmdate: str = None
 	network: bool = False
@@ -149,9 +150,8 @@ class vb:
 	sharedfolder: str = None
 	uploadfiles:list = field(default_factory=list)
 	vboxmanage: str = "VBoxManage"
-	cmds_to_exe_with_network:list = field(default_factory=list)
-	cmds_to_exe_without_network:list = field(default_factory=list)
-	min_to_wait: int = 2
+	#cmds_to_exe_with_network:list = field(default_factory=list)
+	#cmds_to_exe_without_network:list = field(default_factory=list)
 
 	def start(self,headless:bool=True):
 		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
@@ -159,7 +159,6 @@ class vb:
 			cmd += " --type headless"
 
 		exe(cmd)
-		import time;time.sleep(self.min_to_wait*60)
 
 	def vbexe(self, cmd):
 		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
@@ -191,7 +190,7 @@ class vb:
 
 			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
 
-		if self.network is None:
+		if self.network is None or self.disablenetwork:
 			network = "null"
 		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
 
@@ -205,19 +204,20 @@ class vb:
 		
 		for file in self.uploadfiles:
 			self.uploadfile(file)
-		
-		self.start()
-		for cmd in self.cmds_to_exe_with_network:
-			self.vbexe(cmd)
 
-		#Disable the Network
-		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
-		for cmd in self.cmds_to_exe_without_network:
-			self.vbexe(cmd)
+		if False:			
+			self.start()
+			for cmd in self.cmds_to_exe_with_network:
+				self.vbexe(cmd)
 
-		#Turn on the Network
-		exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
-		self.stop()
+			#Disable the Network
+			exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+			for cmd in self.cmds_to_exe_without_network:
+				self.vbexe(cmd)
+
+			#Turn on the Network
+			exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+			self.stop()
 
 	def run(self, headless:bool = True):
 		self.prep()
