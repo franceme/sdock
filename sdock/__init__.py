@@ -388,6 +388,16 @@ end
 	def on(self):
 		exe(""" vagrant up""")
 
+	def resume(self):
+		if self.vagrant_name.strip() is not None and self.vagrant_name.strip() != '':
+			cmd = "{0} startvm {1}".format(self.vb_box_exe,self.vagrant_name)
+			if self.headless:
+				cmd += " --type headless"
+
+			exe(cmd)
+		else:
+			print("Vagrant VM hasn't been created yet")
+
 	def off(self):
 		self.vagrant_name
 		exe("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name))
