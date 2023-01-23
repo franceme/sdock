@@ -10,14 +10,13 @@ def wget(url, verify=True):
 		open(to,'wb').write(resp.content)
 	return to
 
-def extract_ova_from_zip(zipfile):
+def extract_ova_from_zip(local_zipfile):
 	import zipfile
 
-	ovafile = zipfile.replace('.zip','.ova')
-	cur_folder = os.path.abspath(os.curdir)
-	with zipfile.ZipFile(local_zip_file,"r") as zip_ref:
+	ovafile = os.path.basename(local_zipfile).replace('.zip','.ova')
+	with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
 		zip_ref.extractall(cur_folder)
-	os.remove(zipfile)
+	os.remove(local_zipfile)
 
 	return ovafile if os.path.exists(ovafile) else None
 
