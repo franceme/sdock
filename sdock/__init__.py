@@ -124,6 +124,115 @@ class dock:
 		return self.string()
 
 @dataclass
+class vb:
+	"""Class for keeping track of an item in inventory."""
+	vmname: str = "takenname"
+	username: str = None
+	ovafile: str = None
+	disablehosttime: bool = True
+	biosoffset: str = None
+	vmdate: str = None
+	network: bool = False
+	cpu: int = 2
+	ram: int = 4096
+	sharedfolder: str = None
+	uploadfiles:list = field(default_factory=list)
+	vboxmanage: str = "VBoxManage"
+	cmds_to_exe_with_network:list = field(default_factory=list)
+	cmds_to_exe_without_network:list = field(default_factory=list)
+	min_to_wait: int = 2
+
+	def start(self,headless:bool=True):
+		cmd = "{0} startvm {1}".format(self.vboxmanage,self.vmname)
+		if headless:
+			cmd += " --type headless"
+
+		exe(cmd)
+		import time;time.sleep(self.min_to_wait*60)
+
+	def vbexe(self, cmd):
+		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
+		
+		if self.username:
+			string += " --username {0} ".format(self.username)
+
+		string += str(" --exe \"C:\\Windows\\System32\\cmd.exe\" -- cmd.exe/arg0 /C '" + cmd.replace("'","\'") + "'")
+		exe(string)
+
+	def __shared_folder(self, folder):
+		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
+
+	def import_ova(self, ovafile):
+		self.ovafile = ovafile
+
+		exe("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram))
+
+	def disable(self):
+		if self.disablehosttime:
+			exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
+
+		if self.biosoffset:
+			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset))
+
+		if self.vmdate:
+			TO_DATE = datetime.strptime(self.vmdate, '%m/%d/%Y')
+			ms = round((TO_DATE - datetime.utcnow()).total_seconds()*1000)
+
+			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
+
+		if self.network is None:
+			network = "null"
+		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
+
+	def prep(self):
+		if self.ovafile:
+			self.import_ova(self.ovafile)
+
+		self.disable()
+		if self.sharedfolder:
+			self.__shared_folder(self.sharedfolder)
+		
+		for file in self.uploadfiles:
+			self.uploadfile(file)
+		
+		self.start()
+		for cmd in self.cmds_to_exe_with_network:
+			self.vbexe(cmd)
+
+		#Disable the Network
+		exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+		for cmd in self.cmds_to_exe_without_network:
+			self.vbexe(cmd)
+
+		#Turn on the Network
+		exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+		self.stop()
+
+	def run(self, headless:bool = True):
+		self.prep()
+		self.start(headless)
+	
+	def __enter__(self):
+		self.run(True)
+	
+	def stop(self):
+		exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
+
+	def __exit__(self, type, value, traceback):
+		self.stop()
+	
+	def uploadfile(self, file:str):
+		exe("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username))
+	
+	def destroy(self, deletefiles:bool=True):
+		cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.vmname)
+
+		if deletefiles:
+			cmd += " --delete"
+
+		exe(cmd)
+
+@dataclass
 class vagrant(object):
 	vagrant_base:str = "talisker/windows10pro",
 	disablehosttime: bool = True,
