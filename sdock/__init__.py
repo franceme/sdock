@@ -390,6 +390,11 @@ end
 
 	def resume(self):
 		if self.vagrant_name.strip() is not None and self.vagrant_name.strip() != '':
+			if self.vmdate:
+				diff_days = (self.vmdate - datetime.now().date())
+				ms = round(diff_days.total_seconds()*1000)
+				exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vb_box_exe, self.vagrant_name, ms))
+
 			cmd = "{0} startvm {1}".format(self.vb_box_exe,self.vagrant_name)
 			if self.headless:
 				cmd += " --type headless"
