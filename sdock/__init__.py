@@ -263,6 +263,7 @@ class vagrant(object):
 	vb_path: str = None,
 	vb_box_exe: str = "VBoxManage"
 	headless: bool = True
+	save_files:list = None
 
 	def __post_init__(self):
 		if self.uploadfiles is None or type(self.uploadfiles) is tuple:
@@ -276,6 +277,9 @@ class vagrant(object):
 
 		if self.scripts_to_run is None or type(self.scripts_to_run) is tuple:
 			self.scripts_to_run = []
+
+		if self.save_files is None or type(self.save_files) is tuple:
+			self.save_files = []
 
 	@property
 	def vagrant_name(self):
@@ -430,4 +434,5 @@ end
 			exe("rm {0}".format(foil))
 		exe("yes|rm -r .vagrant/")
 		for foil in self.uploadfiles:
-			exe("rm {0}".format(foil))
+			if foil not in self.self.save_files:
+				exe("rm {0}".format(foil))
