@@ -434,5 +434,5 @@ end
 			exe("rm {0}".format(foil))
 		exe("yes|rm -r .vagrant/")
 		for foil in self.uploadfiles:
-			if foil not in self.self.save_files:
+			if foil not in self.save_files:
 				exe("rm {0}".format(foil))
