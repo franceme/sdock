@@ -78,6 +78,7 @@ class dock:
 	postClean: bool = False
 	preClean: bool = False
 	extra: str = None
+	save_host_dir: bool = False
 
 	def clean(self):
 		return "; ".join([
@@ -128,6 +129,7 @@ class dock:
 			getPort(self.ports),
 			'--mac-address ' + str(self.macaddress) if self.macaddress else '',
 			self.extra if self.extra else '',
+			'--env="HOSTDIR={0}"'.format(dir) if self.save_host_dir else '',
 			self.image,
 			cmd
 		]) + str(self.clean()+";" if self.postClean else "")
