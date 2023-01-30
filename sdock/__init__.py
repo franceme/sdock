@@ -10,17 +10,32 @@ def wget(url, verify=True):
 		open(to,'wb').write(resp.content)
 	return to
 
-def extract_ova_from_zip(local_zipfile):
+def extract_file_from_zip(zipfile, extractedfile):
 	import zipfile
 
-	ovafile = os.path.basename(local_zipfile).replace('.zip','.ova')
-	if not os.path.exists(ovafile):
+	if not os.path.exists(extractedfile):
 		cur_folder = os.path.abspath(os.curdir)
 		with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
 			zip_ref.extractall(cur_folder)
 		os.remove(local_zipfile)
 
-	return ovafile if os.path.exists(ovafile) else None
+	return extractedfile if os.path.exists(extractedfile) else None
+
+
+def extract_ova_from_zip(local_zipfile):
+	if False:
+		import zipfile
+
+		ovafile = os.path.basename(local_zipfile).replace('.zip','.ova')
+		if not os.path.exists(ovafile):
+			cur_folder = os.path.abspath(os.curdir)
+			with zipfile.ZipFile(local_zipfile,"r") as zip_ref:
+				zip_ref.extractall(cur_folder)
+			os.remove(local_zipfile)
+
+		return ovafile if os.path.exists(ovafile) else None
+	else:
+		return extract_file_from_zip(local_zipfile, os.path.basename(local_zipfile).replace('.zip','.ova'))
 
 def open_port():
 	"""
@@ -213,7 +228,7 @@ class vb:
 		if self.sharedfolder:
 			self.__shared_folder(self.sharedfolder)
 		
-		for file in self.uploadfiles:
+		for file in list(self.uploadfiles):
 			self.uploadfile(file)
 
 		if False:			
@@ -337,7 +352,8 @@ class vagrant(object):
 		return """ win10.vm.provision "file", source: "{0}", destination: "{1}\\\\{0}" """.format(foil, directory)
 
 
-	def prep(self):		
+	def prep(self):
+		self.uploadfiles = list(self.uploadfiles)	
 		self.uploadfiles += [self.write_startup_file()]
 		uploading_file_strings = []
 		for foil in self.uploadfiles:
@@ -443,6 +459,6 @@ end
 		for foil in ["Vagrant", "on_start*", "on_login*"]:
 			exe("rm {0}".format(foil))
 		exe("yes|rm -r .vagrant/")
-		for foil in self.uploadfiles:
+		for foil in list(self.uploadfiles):
 			if foil not in self.save_files:
 				exe("rm {0}".format(foil))
