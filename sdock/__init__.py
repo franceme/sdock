@@ -119,6 +119,14 @@ class dock:
 		if self.nonet:
 			network = "--network none" #https://docs.docker.com/network/none/
 
+		my_save_host_dir = ''
+		if self.save_host_dir:
+			if 'HOSTDIR' in os.environ:
+				past_dir,current_dir = os.environ['HOSTDIR'], os.path.abspath(os.curdir).replace('/sync/','')
+				my_save_host_dir = '--env="HOSTDIR={0}/{1}"'.format(past_dir,current_dir)
+			else:
+				my_save_host_dir = '--env="HOSTDIR={0}"'.format(dir)
+
 		return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
 			dockerInDocker,
 			'--rm' if self.remove else '',
@@ -129,7 +137,7 @@ class dock:
 			getPort(self.ports),
 			'--mac-address ' + str(self.macaddress) if self.macaddress else '',
 			self.extra if self.extra else '',
-			'--env="HOSTDIR={0}"'.format(dir) if self.save_host_dir else '',
+			my_save_host_dir,
 			self.image,
 			cmd
 		]) + str(self.clean()+";" if self.postClean else "")
