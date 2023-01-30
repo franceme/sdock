@@ -10,7 +10,7 @@ def wget(url, verify=True):
 		open(to,'wb').write(resp.content)
 	return to
 
-def extract_file_from_zip(zipfile, extractedfile):
+def extract_file_from_zip(local_zipfile, extractedfile):
 	import zipfile
 
 	if not os.path.exists(extractedfile):
