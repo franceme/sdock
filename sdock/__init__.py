@@ -272,6 +272,9 @@ class vb:
 				os.remove(self.ovafile)
 
 		exe(cmd)
+	
+	def destroy(self, deletefiles:bool=True):
+		self.clean(deletefiles)
 
 @dataclass
 class vagrant(object):
@@ -456,7 +459,7 @@ end
 		self.vagrant_name
 		exe("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name))
 	
-	def destroy(self):
+	def destroy(self,emptyflag=False):
 		self.vagrant_name
 		exe(""" vagrant destroy -f """)
 		for foil in ["Vagrant", "on_start*", "on_login*"]:
@@ -465,3 +468,6 @@ end
 		for foil in list(self.uploadfiles):
 			if foil not in self.save_files:
 				exe("rm {0}".format(foil))
+
+	def clean(self,emptyflag=False):
+		self.destroy(emptyflag)
