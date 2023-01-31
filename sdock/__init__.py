@@ -196,6 +196,27 @@ class vb:
 		string += str(" --exe \"C:\\Windows\\System32\\cmd.exe\" -- cmd.exe/arg0 /C '" + cmd.replace("'","\'") + "'")
 		exe(string)
 
+	def snapshot_take(self,snapshotname):
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} take {2}".format(self.vboxmanage,self.vmname, snapshotname))
+
+	def snapshot_load(self,snapshotname):
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} restore {2}".format(self.vboxmanage,self.vmname, snapshotname))
+
+	def snapshot_list(self):
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} list".format(self.vboxmanage,self.vmname))
+
+	def snapshot_delete(self,snapshotname):
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} delete {2}".format(self.vboxmanage,self.vmname, snapshotname))
+
+	def export_to_ova(self,ovaname):
+		#https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
+		exe("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,self.vmname, ovaname))
+
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
 
@@ -325,6 +346,32 @@ class vagrant(object):
 				vag_name = item.split('/')[-1].strip()
 
 		return vag_name
+
+	def snapshot_take(self,snapshotname):
+		vb_name = self.vagrant_name
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} take {2}".format(self.vboxmanage,vb_name, snapshotname))
+
+	def snapshot_load(self,snapshotname):
+		vb_name = self.vagrant_name
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} restore {2}".format(self.vboxmanage,vb_name, snapshotname))
+
+	def snapshot_list(self):
+		vb_name = self.vagrant_name
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} list".format(self.vboxmanage,vb_name))
+
+	def snapshot_delete(self,snapshotname):
+		vb_name = self.vagrant_name
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
+		exe("{0} snapshot {1} delete {2}".format(self.vboxmanage,vb_name, snapshotname))
+
+	def export_to_ova(self,ovaname):
+		vb_name = self.vagrant_name
+		#https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
+		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
+		exe("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,vb_name, ovaname))
 
 	#https://jd-bots.com/2021/05/15/how-to-run-powershell-script-on-windows-startup/
 	#https://stackoverflow.com/questions/20575257/how-do-i-run-a-powershell-script-when-the-computer-starts
