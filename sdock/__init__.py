@@ -305,6 +305,9 @@ class vagrant(object):
 
 		if self.save_files is None or type(self.save_files) is tuple:
 			self.save_files = []
+		
+		if self.vmdate is None or type(self.vmdate) is tuple:
+			self.vmdate = None
 
 	@property
 	def vagrant_name(self):
