@@ -528,8 +528,6 @@ def xmlfile_to_dict(xmlfile):
 def xml_to_dict(xmlcontent):
 	return xmltodict.parse(xmlcontent)
 
-import vb_gen
-
 def dict_to_xml(dyct):
 	return xmltodict.unparse(dyct, pretty=True)
 
