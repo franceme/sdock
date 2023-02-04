@@ -20,7 +20,7 @@ long_description = pathlib.Path(f"{here}/README.md").read_text(encoding='utf-8')
 REQUIRES_PYTHON = '>=3.7.0'
 RELEASE = "?"
 entry_point = f"src.{NAME}"
-VERSION = "0.0.108"
+VERSION = "0.0.109"
 
 def zip_program(outputName:str = f"{NAME}.zip"):
 	#http://blog.ablepear.com/2012/10/bundling-python-files-into-stand-alone.html
@@ -106,8 +106,7 @@ setup(
 	},
 	install_requires=[
 		"requests",
-		"python-dateutil",
-		"xmltodict"
+		"xsdata"
 	],
 	include_package_data=True,
 	classifiers=[
