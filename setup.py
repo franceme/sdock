@@ -105,8 +105,9 @@ setup(
 	entry_points={
 	},
 	install_requires=[
-		"requests"
-		"dateutil"
+		"requests",
+		"python-dateutil",
+		"xmltodict"
 	],
 	include_package_data=True,
 	classifiers=[

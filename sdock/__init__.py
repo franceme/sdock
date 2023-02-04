@@ -2,6 +2,7 @@ import os, sys, requests, time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
+import xmltodict
 
 def wget(url, verify=True):
 	to = url.split('/')[-1].replace('%20','_')
@@ -518,3 +519,20 @@ end
 
 	def clean(self,emptyflag=False):
 		self.destroy(emptyflag)
+
+def xmlfile_to_dict(xmlfile):
+	with open(xmlfile,"r") as reader:
+		contents = reader.readlines()
+	return xmltodict.parse(''.join(contents))
+
+def xml_to_dict(xmlcontent):
+	return xmltodict.parse(xmlcontent)
+
+import vb_gen
+
+def dict_to_xml(dyct):
+	return xmltodict.unparse(dyct, pretty=True)
+
+def dict_to_xmlfile(dyct,xmlfile):
+	with open(xmlfile,"w+") as writer:
+		writer.write(xmltodict.unparse(dyct, pretty=True))
