@@ -2,7 +2,7 @@ import os, sys, requests, time
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
-import xmltodict
+from xsdata.formats.dataclass.parsers import XmlParser
 
 def wget(url, verify=True):
 	to = url.split('/')[-1].replace('%20','_')

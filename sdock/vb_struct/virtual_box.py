@@ -2,10 +2,99 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Union
 from xsdata.models.datatype import XmlDateTime
 
+__NAMESPACE__ = "http://www.virtualbox.org/"
+
 
 @dataclass
 class AudioAdapter:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    controller: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
     driver: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    enabled: Optional[bool] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    enabled_out: Optional[bool] = field(
+        default=None,
+        metadata={
+            "name": "enabledOut",
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
+class Clipboard:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    mode: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
+class Controller:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    name: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    type: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
+class Display:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    controller: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    vramsize: Optional[int] = field(
+        default=None,
+        metadata={
+            "name": "VRAMSize",
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
+class DragAndDrop:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    mode: Optional[str] = field(
         default=None,
         metadata={
             "type": "Attribute",
@@ -15,6 +104,9 @@ class AudioAdapter:
 
 @dataclass
 class ExtraDataItem:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     name: Optional[str] = field(
         default=None,
         metadata={
@@ -31,6 +123,9 @@ class ExtraDataItem:
 
 @dataclass
 class Group:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     name: Optional[str] = field(
         default=None,
         metadata={
@@ -41,6 +136,9 @@ class Group:
 
 @dataclass
 class GuestProperty:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     name: Optional[str] = field(
         default=None,
         metadata={
@@ -68,7 +166,25 @@ class GuestProperty:
 
 
 @dataclass
+class Hid:
+    class Meta:
+        name = "HID"
+        namespace = "http://www.virtualbox.org/"
+
+    pointing: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "Pointing",
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
 class HardDisk:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     uuid: Optional[str] = field(
         default=None,
         metadata={
@@ -104,6 +220,9 @@ class HardDisk:
 
 @dataclass
 class HardwareVirtExLargePages:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     enabled: Optional[bool] = field(
         default=None,
         metadata={
@@ -116,6 +235,7 @@ class HardwareVirtExLargePages:
 class Ioapic:
     class Meta:
         name = "IOAPIC"
+        namespace = "http://www.virtualbox.org/"
 
     enabled: Optional[bool] = field(
         default=None,
@@ -127,17 +247,16 @@ class Ioapic:
 
 @dataclass
 class Image:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     uuid: Optional[str] = field(
         default=None,
         metadata={
             "type": "Attribute",
         }
     )
-
-
-@dataclass
-class InternalNetwork:
-    name: Optional[str] = field(
+    location: Optional[str] = field(
         default=None,
         metadata={
             "type": "Attribute",
@@ -147,6 +266,9 @@ class InternalNetwork:
 
 @dataclass
 class LongMode:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     enabled: Optional[bool] = field(
         default=None,
         metadata={
@@ -157,6 +279,9 @@ class LongMode:
 
 @dataclass
 class Memory:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     ramsize: Optional[int] = field(
         default=None,
         metadata={
@@ -170,6 +295,7 @@ class Memory:
 class Nat:
     class Meta:
         name = "NAT"
+        namespace = "http://www.virtualbox.org/"
 
     localhost_reachable: Optional[bool] = field(
         default=None,
@@ -181,38 +307,10 @@ class Nat:
 
 
 @dataclass
-class Natnetwork:
-    class Meta:
-        name = "NATNetwork"
-
-    name: Optional[str] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-
-
-@dataclass
-class Order:
-    position: Optional[int] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-    device: Optional[str] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-
-
-@dataclass
 class Pae:
     class Meta:
         name = "PAE"
+        namespace = "http://www.virtualbox.org/"
 
     enabled: Optional[bool] = field(
         default=None,
@@ -223,23 +321,10 @@ class Pae:
 
 
 @dataclass
-class Property:
-    name: Optional[str] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-    value: Optional[Union[int, str]] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-
-
-@dataclass
 class SharedFolder:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     name: Optional[str] = field(
         default=None,
         metadata={
@@ -269,7 +354,88 @@ class SharedFolder:
 
 
 @dataclass
+class SmbiosUuidLittleEndian:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    enabled: Optional[bool] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+
+
+@dataclass
+class Snapshots:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    snapshot: Optional["Snapshot"] = field(
+        default=None,
+        metadata={
+            "name": "Snapshot",
+            "type": "Element",
+        }
+    )
+
+
+@dataclass
+class Adapter:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    slot: Optional[int] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    enabled: Optional[bool] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    macaddress: Optional[str] = field(
+        default=None,
+        metadata={
+            "name": "MACAddress",
+            "type": "Attribute",
+        }
+    )
+    cable: Optional[bool] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    type: Optional[str] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
+    nat: Optional[Nat] = field(
+        default=None,
+        metadata={
+            "name": "NAT",
+            "type": "Element",
+        }
+    )
+
+
+@dataclass
 class AttachedDevice:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    passthrough: Optional[bool] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
     type: Optional[str] = field(
         default=None,
         metadata={
@@ -307,6 +473,7 @@ class AttachedDevice:
 class Bios:
     class Meta:
         name = "BIOS"
+        namespace = "http://www.virtualbox.org/"
 
     ioapic: Optional[Ioapic] = field(
         default=None,
@@ -315,14 +482,10 @@ class Bios:
             "type": "Element",
         }
     )
-
-
-@dataclass
-class Boot:
-    order: List[Order] = field(
-        default_factory=list,
+    smbios_uuid_little_endian: Optional[SmbiosUuidLittleEndian] = field(
+        default=None,
         metadata={
-            "name": "Order",
+            "name": "SmbiosUuidLittleEndian",
             "type": "Element",
         }
     )
@@ -332,7 +495,14 @@ class Boot:
 class Cpu:
     class Meta:
         name = "CPU"
+        namespace = "http://www.virtualbox.org/"
 
+    count: Optional[int] = field(
+        default=None,
+        metadata={
+            "type": "Attribute",
+        }
+    )
     pae: Optional[Pae] = field(
         default=None,
         metadata={
@@ -357,25 +527,29 @@ class Cpu:
 
 
 @dataclass
-class DisabledModes:
-    nat: Optional[Nat] = field(
+class Controllers:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    controller: Optional[Controller] = field(
         default=None,
         metadata={
-            "name": "NAT",
+            "name": "Controller",
             "type": "Element",
         }
     )
-    internal_network: Optional[InternalNetwork] = field(
+
+
+@dataclass
+class Dvdimages:
+    class Meta:
+        name = "DVDImages"
+        namespace = "http://www.virtualbox.org/"
+
+    image: Optional[Image] = field(
         default=None,
         metadata={
-            "name": "InternalNetwork",
-            "type": "Element",
-        }
-    )
-    natnetwork: Optional[Natnetwork] = field(
-        default=None,
-        metadata={
-            "name": "NATNetwork",
+            "name": "Image",
             "type": "Element",
         }
     )
@@ -383,6 +557,9 @@ class DisabledModes:
 
 @dataclass
 class ExtraData:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     extra_data_item: List[ExtraDataItem] = field(
         default_factory=list,
         metadata={
@@ -394,6 +571,9 @@ class ExtraData:
 
 @dataclass
 class Groups:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     group: Optional[Group] = field(
         default=None,
         metadata={
@@ -405,6 +585,9 @@ class Groups:
 
 @dataclass
 class GuestProperties:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     guest_property: List[GuestProperty] = field(
         default_factory=list,
         metadata={
@@ -416,6 +599,9 @@ class GuestProperties:
 
 @dataclass
 class HardDisks:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     hard_disk: Optional[HardDisk] = field(
         default=None,
         metadata={
@@ -427,6 +613,9 @@ class HardDisks:
 
 @dataclass
 class SharedFolders:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     shared_folder: Optional[SharedFolder] = field(
         default=None,
         metadata={
@@ -437,57 +626,10 @@ class SharedFolders:
 
 
 @dataclass
-class Vrdeproperties:
-    class Meta:
-        name = "VRDEProperties"
-
-    property: List[Property] = field(
-        default_factory=list,
-        metadata={
-            "name": "Property",
-            "type": "Element",
-        }
-    )
-
-
-@dataclass
-class Adapter:
-    slot: Optional[int] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-    enabled: Optional[bool] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-    macaddress: Optional[str] = field(
-        default=None,
-        metadata={
-            "name": "MACAddress",
-            "type": "Attribute",
-        }
-    )
-    type: Optional[str] = field(
-        default=None,
-        metadata={
-            "type": "Attribute",
-        }
-    )
-    disabled_modes: Optional[DisabledModes] = field(
-        default=None,
-        metadata={
-            "name": "DisabledModes",
-            "type": "Element",
-        }
-    )
-
-
-@dataclass
 class MediaRegistry:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     hard_disks: Optional[HardDisks] = field(
         default=None,
         metadata={
@@ -495,20 +637,24 @@ class MediaRegistry:
             "type": "Element",
         }
     )
+    dvdimages: Optional[Dvdimages] = field(
+        default=None,
+        metadata={
+            "name": "DVDImages",
+            "type": "Element",
+        }
+    )
 
 
 @dataclass
-class RemoteDisplay:
-    enabled: Optional[bool] = field(
+class Network:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    adapter: Optional[Adapter] = field(
         default=None,
         metadata={
-            "type": "Attribute",
-        }
-    )
-    vrdeproperties: Optional[Vrdeproperties] = field(
-        default=None,
-        metadata={
-            "name": "VRDEProperties",
+            "name": "Adapter",
             "type": "Element",
         }
     )
@@ -516,6 +662,9 @@ class RemoteDisplay:
 
 @dataclass
 class StorageController:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     name: Optional[str] = field(
         default=None,
         metadata={
@@ -549,8 +698,36 @@ class StorageController:
             "type": "Attribute",
         }
     )
-    attached_device: Optional[AttachedDevice] = field(
+    ide0_master_emulation_port: Optional[int] = field(
         default=None,
+        metadata={
+            "name": "IDE0MasterEmulationPort",
+            "type": "Attribute",
+        }
+    )
+    ide0_slave_emulation_port: Optional[int] = field(
+        default=None,
+        metadata={
+            "name": "IDE0SlaveEmulationPort",
+            "type": "Attribute",
+        }
+    )
+    ide1_master_emulation_port: Optional[int] = field(
+        default=None,
+        metadata={
+            "name": "IDE1MasterEmulationPort",
+            "type": "Attribute",
+        }
+    )
+    ide1_slave_emulation_port: Optional[int] = field(
+        default=None,
+        metadata={
+            "name": "IDE1SlaveEmulationPort",
+            "type": "Attribute",
+        }
+    )
+    attached_device: List[AttachedDevice] = field(
+        default_factory=list,
         metadata={
             "name": "AttachedDevice",
             "type": "Element",
@@ -559,11 +736,15 @@ class StorageController:
 
 
 @dataclass
-class Network:
-    adapter: Optional[Adapter] = field(
+class Usb:
+    class Meta:
+        name = "USB"
+        namespace = "http://www.virtualbox.org/"
+
+    controllers: Optional[Controllers] = field(
         default=None,
         metadata={
-            "name": "Adapter",
+            "name": "Controllers",
             "type": "Element",
         }
     )
@@ -571,6 +752,9 @@ class Network:
 
 @dataclass
 class StorageControllers:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     storage_controller: Optional[StorageController] = field(
         default=None,
         metadata={
@@ -582,6 +766,9 @@ class StorageControllers:
 
 @dataclass
 class Hardware:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     cpu: Optional[Cpu] = field(
         default=None,
         metadata={
@@ -596,17 +783,17 @@ class Hardware:
             "type": "Element",
         }
     )
-    boot: Optional[Boot] = field(
+    hid: Optional[Hid] = field(
         default=None,
         metadata={
-            "name": "Boot",
+            "name": "HID",
             "type": "Element",
         }
     )
-    remote_display: Optional[RemoteDisplay] = field(
+    display: Optional[Display] = field(
         default=None,
         metadata={
-            "name": "RemoteDisplay",
+            "name": "Display",
             "type": "Element",
         }
     )
@@ -614,6 +801,13 @@ class Hardware:
         default=None,
         metadata={
             "name": "BIOS",
+            "type": "Element",
+        }
+    )
+    usb: Optional[Usb] = field(
+        default=None,
+        metadata={
+            "name": "USB",
             "type": "Element",
         }
     )
@@ -638,10 +832,17 @@ class Hardware:
             "type": "Element",
         }
     )
-    clipboard: Optional[object] = field(
+    clipboard: Optional[Clipboard] = field(
         default=None,
         metadata={
             "name": "Clipboard",
+            "type": "Element",
+        }
+    )
+    drag_and_drop: Optional[DragAndDrop] = field(
+        default=None,
+        metadata={
+            "name": "DragAndDrop",
             "type": "Element",
         }
     )
@@ -663,6 +864,9 @@ class Hardware:
 
 @dataclass
 class Snapshot:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     uuid: Optional[str] = field(
         default=None,
         metadata={
@@ -696,10 +900,20 @@ class Snapshot:
             "type": "Element",
         }
     )
+    snapshots: Optional[Snapshots] = field(
+        default=None,
+        metadata={
+            "name": "Snapshots",
+            "type": "Element",
+        }
+    )
 
 
 @dataclass
 class Machine:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     uuid: Optional[str] = field(
         default=None,
         metadata={
@@ -793,6 +1007,9 @@ class Machine:
 
 @dataclass
 class VirtualBox:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
     version: Optional[str] = field(
         default=None,
         metadata={
