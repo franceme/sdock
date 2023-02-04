@@ -60,6 +60,12 @@ def from_datetime(x: Any) -> datetime:
     return dateutil.parser.parse(x)
 
 
+def tryget(obj, value):
+    try:
+        return tryget(obj,value)
+    except:
+        return None
+
 class ExtraDataItem:
     name: str
     value: str
@@ -71,8 +77,8 @@ class ExtraDataItem:
     @staticmethod
     def from_dict(obj: Any) -> 'ExtraDataItem':
         assert isinstance(obj, dict)
-        name = from_str(obj.get("@name"))
-        value = from_str(obj.get("@value"))
+        name = from_str(tryget(obj,"@name"))
+        value = from_str(tryget(obj,"@value"))
         return ExtraDataItem(name, value)
 
     def to_dict(self) -> dict:
@@ -91,7 +97,7 @@ class ExtraData:
     @staticmethod
     def from_dict(obj: Any) -> 'ExtraData':
         assert isinstance(obj, dict)
-        extra_data_item = from_list(ExtraDataItem.from_dict, obj.get("ExtraDataItem"))
+        extra_data_item = from_list(ExtraDataItem.from_dict, tryget(obj,"ExtraDataItem"))
         return ExtraData(extra_data_item)
 
     def to_dict(self) -> dict:
@@ -109,7 +115,7 @@ class Group:
     @staticmethod
     def from_dict(obj: Any) -> 'Group':
         assert isinstance(obj, dict)
-        name = from_str(obj.get("@name"))
+        name = from_str(tryget(obj,"@name"))
         return Group(name)
 
     def to_dict(self) -> dict:
@@ -127,7 +133,7 @@ class Groups:
     @staticmethod
     def from_dict(obj: Any) -> 'Groups':
         assert isinstance(obj, dict)
-        group = Group.from_dict(obj.get("Group"))
+        group = Group.from_dict(tryget(obj,"Group"))
         return Groups(group)
 
     def to_dict(self) -> dict:
@@ -145,7 +151,7 @@ class AudioAdapter:
     @staticmethod
     def from_dict(obj: Any) -> 'AudioAdapter':
         assert isinstance(obj, dict)
-        driver = from_str(obj.get("@driver"))
+        driver = from_str(tryget(obj,"@driver"))
         return AudioAdapter(driver)
 
     def to_dict(self) -> dict:
@@ -163,7 +169,7 @@ class Ioapic:
     @staticmethod
     def from_dict(obj: Any) -> 'Ioapic':
         assert isinstance(obj, dict)
-        enabled = from_stringified_bool(from_str(obj.get("@enabled")))
+        enabled = from_stringified_bool(from_str(tryget(obj,"@enabled")))
         return Ioapic(enabled)
 
     def to_dict(self) -> dict:
@@ -181,7 +187,7 @@ class BIOS:
     @staticmethod
     def from_dict(obj: Any) -> 'BIOS':
         assert isinstance(obj, dict)
-        ioapic = Ioapic.from_dict(obj.get("IOAPIC"))
+        ioapic = Ioapic.from_dict(tryget(obj,"IOAPIC"))
         return BIOS(ioapic)
 
     def to_dict(self) -> dict:
@@ -201,8 +207,8 @@ class Order:
     @staticmethod
     def from_dict(obj: Any) -> 'Order':
         assert isinstance(obj, dict)
-        position = int(from_str(obj.get("@position")))
-        device = from_str(obj.get("@device"))
+        position = int(from_str(tryget(obj,"@position")))
+        device = from_str(tryget(obj,"@device"))
         return Order(position, device)
 
     def to_dict(self) -> dict:
@@ -221,7 +227,7 @@ class Boot:
     @staticmethod
     def from_dict(obj: Any) -> 'Boot':
         assert isinstance(obj, dict)
-        order = from_list(Order.from_dict, obj.get("Order"))
+        order = from_list(Order.from_dict, tryget(obj,"Order"))
         return Boot(order)
 
     def to_dict(self) -> dict:
@@ -243,9 +249,9 @@ class CPU:
     @staticmethod
     def from_dict(obj: Any) -> 'CPU':
         assert isinstance(obj, dict)
-        pae = Ioapic.from_dict(obj.get("PAE"))
-        long_mode = Ioapic.from_dict(obj.get("LongMode"))
-        hardware_virt_ex_large_pages = Ioapic.from_dict(obj.get("HardwareVirtExLargePages"))
+        pae = Ioapic.from_dict(tryget(obj,"PAE"))
+        long_mode = Ioapic.from_dict(tryget(obj,"LongMode"))
+        hardware_virt_ex_large_pages = Ioapic.from_dict(tryget(obj,"HardwareVirtExLargePages"))
         return CPU(pae, long_mode, hardware_virt_ex_large_pages)
 
     def to_dict(self) -> dict:
@@ -278,10 +284,10 @@ class GuestProperty:
     @staticmethod
     def from_dict(obj: Any) -> 'GuestProperty':
         assert isinstance(obj, dict)
-        name = from_str(obj.get("@name"))
-        value = from_str(obj.get("@value"))
-        timestamp = from_str(obj.get("@timestamp"))
-        flags = Flags(obj.get("@flags"))
+        name = from_str(tryget(obj,"@name"))
+        value = from_str(tryget(obj,"@value"))
+        timestamp = from_str(tryget(obj,"@timestamp"))
+        flags = Flags(tryget(obj,"@flags"))
         return GuestProperty(name, value, timestamp, flags)
 
     def to_dict(self) -> dict:
@@ -302,7 +308,7 @@ class GuestProperties:
     @staticmethod
     def from_dict(obj: Any) -> 'GuestProperties':
         assert isinstance(obj, dict)
-        guest_property = from_list(GuestProperty.from_dict, obj.get("GuestProperty"))
+        guest_property = from_list(GuestProperty.from_dict, tryget(obj,"GuestProperty"))
         return GuestProperties(guest_property)
 
     def to_dict(self) -> dict:
@@ -320,7 +326,7 @@ class Memory:
     @staticmethod
     def from_dict(obj: Any) -> 'Memory':
         assert isinstance(obj, dict)
-        ram_size = int(from_str(obj.get("@RAMSize")))
+        ram_size = int(from_str(tryget(obj,"@RAMSize")))
         return Memory(ram_size)
 
     def to_dict(self) -> dict:
@@ -338,7 +344,7 @@ class Nat:
     @staticmethod
     def from_dict(obj: Any) -> 'Nat':
         assert isinstance(obj, dict)
-        localhost_reachable = from_stringified_bool(from_str(obj.get("@localhost-reachable")))
+        localhost_reachable = from_stringified_bool(from_str(tryget(obj,"@localhost-reachable")))
         return Nat(localhost_reachable)
 
     def to_dict(self) -> dict:
@@ -360,9 +366,9 @@ class DisabledModes:
     @staticmethod
     def from_dict(obj: Any) -> 'DisabledModes':
         assert isinstance(obj, dict)
-        nat = Nat.from_dict(obj.get("NAT"))
-        internal_network = Group.from_dict(obj.get("InternalNetwork"))
-        nat_network = Group.from_dict(obj.get("NATNetwork"))
+        nat = Nat.from_dict(tryget(obj,"NAT"))
+        internal_network = Group.from_dict(tryget(obj,"InternalNetwork"))
+        nat_network = Group.from_dict(tryget(obj,"NATNetwork"))
         return DisabledModes(nat, internal_network, nat_network)
 
     def to_dict(self) -> dict:
@@ -390,11 +396,11 @@ class Adapter:
     @staticmethod
     def from_dict(obj: Any) -> 'Adapter':
         assert isinstance(obj, dict)
-        slot = int(from_str(obj.get("@slot")))
-        enabled = from_stringified_bool(from_str(obj.get("@enabled")))
-        mac_address = from_str(obj.get("@MACAddress"))
-        type = from_str(obj.get("@type"))
-        disabled_modes = DisabledModes.from_dict(obj.get("DisabledModes"))
+        slot = int(from_str(tryget(obj,"@slot")))
+        enabled = from_stringified_bool(from_str(tryget(obj,"@enabled")))
+        mac_address = from_str(tryget(obj,"@MACAddress"))
+        type = from_str(tryget(obj,"@type"))
+        disabled_modes = DisabledModes.from_dict(tryget(obj,"DisabledModes"))
         return Adapter(slot, enabled, mac_address, type, disabled_modes)
 
     def to_dict(self) -> dict:
@@ -416,7 +422,7 @@ class Network:
     @staticmethod
     def from_dict(obj: Any) -> 'Network':
         assert isinstance(obj, dict)
-        adapter = Adapter.from_dict(obj.get("Adapter"))
+        adapter = Adapter.from_dict(tryget(obj,"Adapter"))
         return Network(adapter)
 
     def to_dict(self) -> dict:
@@ -434,7 +440,7 @@ class VRDEProperties:
     @staticmethod
     def from_dict(obj: Any) -> 'VRDEProperties':
         assert isinstance(obj, dict)
-        property = from_list(ExtraDataItem.from_dict, obj.get("Property"))
+        property = from_list(ExtraDataItem.from_dict, tryget(obj,"Property"))
         return VRDEProperties(property)
 
     def to_dict(self) -> dict:
@@ -454,8 +460,8 @@ class RemoteDisplay:
     @staticmethod
     def from_dict(obj: Any) -> 'RemoteDisplay':
         assert isinstance(obj, dict)
-        enabled = from_stringified_bool(from_str(obj.get("@enabled")))
-        vrde_properties = VRDEProperties.from_dict(obj.get("VRDEProperties"))
+        enabled = from_stringified_bool(from_str(tryget(obj,"@enabled")))
+        vrde_properties = VRDEProperties.from_dict(tryget(obj,"VRDEProperties"))
         return RemoteDisplay(enabled, vrde_properties)
 
     def to_dict(self) -> dict:
@@ -480,10 +486,10 @@ class SharedFolder:
     @staticmethod
     def from_dict(obj: Any) -> 'SharedFolder':
         assert isinstance(obj, dict)
-        name = from_str(obj.get("@name"))
-        host_path = from_str(obj.get("@hostPath"))
-        writable = from_stringified_bool(from_str(obj.get("@writable")))
-        auto_mount = from_stringified_bool(from_str(obj.get("@autoMount")))
+        name = from_str(tryget(obj,"@name"))
+        host_path = from_str(tryget(obj,"@hostPath"))
+        writable = from_stringified_bool(from_str(tryget(obj,"@writable")))
+        auto_mount = from_stringified_bool(from_str(tryget(obj,"@autoMount")))
         return SharedFolder(name, host_path, writable, auto_mount)
 
     def to_dict(self) -> dict:
@@ -504,7 +510,7 @@ class SharedFolders:
     @staticmethod
     def from_dict(obj: Any) -> 'SharedFolders':
         assert isinstance(obj, dict)
-        shared_folder = SharedFolder.from_dict(obj.get("SharedFolder"))
+        shared_folder = SharedFolder.from_dict(tryget(obj,"SharedFolder"))
         return SharedFolders(shared_folder)
 
     def to_dict(self) -> dict:
@@ -522,7 +528,7 @@ class Image:
     @staticmethod
     def from_dict(obj: Any) -> 'Image':
         assert isinstance(obj, dict)
-        uuid = from_str(obj.get("@uuid"))
+        uuid = from_str(tryget(obj,"@uuid"))
         return Image(uuid)
 
     def to_dict(self) -> dict:
@@ -548,11 +554,11 @@ class AttachedDevice:
     @staticmethod
     def from_dict(obj: Any) -> 'AttachedDevice':
         assert isinstance(obj, dict)
-        type = from_str(obj.get("@type"))
-        hotpluggable = from_stringified_bool(from_str(obj.get("@hotpluggable")))
-        port = int(from_str(obj.get("@port")))
-        device = int(from_str(obj.get("@device")))
-        image = Image.from_dict(obj.get("Image"))
+        type = from_str(tryget(obj,"@type"))
+        hotpluggable = from_stringified_bool(from_str(tryget(obj,"@hotpluggable")))
+        port = int(from_str(tryget(obj,"@port")))
+        device = int(from_str(tryget(obj,"@device")))
+        image = Image.from_dict(tryget(obj,"Image"))
         return AttachedDevice(type, hotpluggable, port, device, image)
 
     def to_dict(self) -> dict:
@@ -584,12 +590,12 @@ class StorageController:
     @staticmethod
     def from_dict(obj: Any) -> 'StorageController':
         assert isinstance(obj, dict)
-        name = from_str(obj.get("@name"))
-        type = from_str(obj.get("@type"))
-        port_count = int(from_str(obj.get("@PortCount")))
-        use_host_io_cache = from_stringified_bool(from_str(obj.get("@useHostIOCache")))
-        bootable = from_stringified_bool(from_str(obj.get("@Bootable")))
-        attached_device = AttachedDevice.from_dict(obj.get("AttachedDevice"))
+        name = from_str(tryget(obj,"@name"))
+        type = from_str(tryget(obj,"@type"))
+        port_count = int(from_str(tryget(obj,"@PortCount")))
+        use_host_io_cache = from_stringified_bool(from_str(tryget(obj,"@useHostIOCache")))
+        bootable = from_stringified_bool(from_str(tryget(obj,"@Bootable")))
+        attached_device = AttachedDevice.from_dict(tryget(obj,"AttachedDevice"))
         return StorageController(name, type, port_count, use_host_io_cache, bootable, attached_device)
 
     def to_dict(self) -> dict:
@@ -612,7 +618,7 @@ class StorageControllers:
     @staticmethod
     def from_dict(obj: Any) -> 'StorageControllers':
         assert isinstance(obj, dict)
-        storage_controller = StorageController.from_dict(obj.get("StorageController"))
+        storage_controller = StorageController.from_dict(tryget(obj,"StorageController"))
         return StorageControllers(storage_controller)
 
     def to_dict(self) -> dict:
@@ -650,17 +656,17 @@ class Hardware:
     @staticmethod
     def from_dict(obj: Any) -> 'Hardware':
         assert isinstance(obj, dict)
-        cpu = CPU.from_dict(obj.get("CPU"))
-        memory = Memory.from_dict(obj.get("Memory"))
-        boot = Boot.from_dict(obj.get("Boot"))
-        remote_display = RemoteDisplay.from_dict(obj.get("RemoteDisplay"))
-        bios = BIOS.from_dict(obj.get("BIOS"))
-        network = Network.from_dict(obj.get("Network"))
-        audio_adapter = AudioAdapter.from_dict(obj.get("AudioAdapter"))
-        shared_folders = SharedFolders.from_dict(obj.get("SharedFolders"))
-        clipboard = from_none(obj.get("Clipboard"))
-        guest_properties = GuestProperties.from_dict(obj.get("GuestProperties"))
-        storage_controllers = StorageControllers.from_dict(obj.get("StorageControllers"))
+        cpu = CPU.from_dict(tryget(obj,"CPU"))
+        memory = Memory.from_dict(tryget(obj,"Memory"))
+        boot = Boot.from_dict(tryget(obj,"Boot"))
+        remote_display = RemoteDisplay.from_dict(tryget(obj,"RemoteDisplay"))
+        bios = BIOS.from_dict(tryget(obj,"BIOS"))
+        network = Network.from_dict(tryget(obj,"Network"))
+        audio_adapter = AudioAdapter.from_dict(tryget(obj,"AudioAdapter"))
+        shared_folders = SharedFolders.from_dict(tryget(obj,"SharedFolders"))
+        clipboard = from_none(tryget(obj,"Clipboard"))
+        guest_properties = GuestProperties.from_dict(tryget(obj,"GuestProperties"))
+        storage_controllers = StorageControllers.from_dict(tryget(obj,"StorageControllers"))
         return Hardware(cpu, memory, boot, remote_display, bios, network, audio_adapter, shared_folders, clipboard, guest_properties, storage_controllers)
 
     def to_dict(self) -> dict:
@@ -692,9 +698,9 @@ class HardDiskHardDisk:
     @staticmethod
     def from_dict(obj: Any) -> 'HardDiskHardDisk':
         assert isinstance(obj, dict)
-        uuid = from_str(obj.get("@uuid"))
-        location = from_str(obj.get("@location"))
-        format = from_str(obj.get("@format"))
+        uuid = from_str(tryget(obj,"@uuid"))
+        location = from_str(tryget(obj,"@location"))
+        format = from_str(tryget(obj,"@format"))
         return HardDiskHardDisk(uuid, location, format)
 
     def to_dict(self) -> dict:
@@ -722,11 +728,11 @@ class HardDisksHardDisk:
     @staticmethod
     def from_dict(obj: Any) -> 'HardDisksHardDisk':
         assert isinstance(obj, dict)
-        uuid = from_str(obj.get("@uuid"))
-        location = from_str(obj.get("@location"))
-        format = from_str(obj.get("@format"))
-        type = from_str(obj.get("@type"))
-        hard_disk = HardDiskHardDisk.from_dict(obj.get("HardDisk"))
+        uuid = from_str(tryget(obj,"@uuid"))
+        location = from_str(tryget(obj,"@location"))
+        format = from_str(tryget(obj,"@format"))
+        type = from_str(tryget(obj,"@type"))
+        hard_disk = HardDiskHardDisk.from_dict(tryget(obj,"HardDisk"))
         return HardDisksHardDisk(uuid, location, format, type, hard_disk)
 
     def to_dict(self) -> dict:
@@ -748,7 +754,7 @@ class HardDisks:
     @staticmethod
     def from_dict(obj: Any) -> 'HardDisks':
         assert isinstance(obj, dict)
-        hard_disk = HardDisksHardDisk.from_dict(obj.get("HardDisk"))
+        hard_disk = HardDisksHardDisk.from_dict(tryget(obj,"HardDisk"))
         return HardDisks(hard_disk)
 
     def to_dict(self) -> dict:
@@ -766,7 +772,7 @@ class MediaRegistry:
     @staticmethod
     def from_dict(obj: Any) -> 'MediaRegistry':
         assert isinstance(obj, dict)
-        hard_disks = HardDisks.from_dict(obj.get("HardDisks"))
+        hard_disks = HardDisks.from_dict(tryget(obj,"HardDisks"))
         return MediaRegistry(hard_disks)
 
     def to_dict(self) -> dict:
@@ -792,11 +798,11 @@ class Snapshot:
     @staticmethod
     def from_dict(obj: Any) -> 'Snapshot':
         assert isinstance(obj, dict)
-        uuid = from_str(obj.get("@uuid"))
-        name = from_str(obj.get("@name"))
-        time_stamp = from_datetime(obj.get("@timeStamp"))
-        state_file = from_str(obj.get("@stateFile"))
-        hardware = Hardware.from_dict(obj.get("Hardware"))
+        uuid = from_str(tryget(obj,"@uuid"))
+        name = from_str(tryget(obj,"@name"))
+        time_stamp = from_datetime(tryget(obj,"@timeStamp"))
+        state_file = from_str(tryget(obj,"@stateFile"))
+        hardware = Hardware.from_dict(tryget(obj,"Hardware"))
         return Snapshot(uuid, name, time_stamp, state_file, hardware)
 
     def to_dict(self) -> dict:
@@ -842,19 +848,19 @@ class Machine:
     @staticmethod
     def from_dict(obj: Any) -> 'Machine':
         assert isinstance(obj, dict)
-        uuid = from_str(obj.get("@uuid"))
-        name = from_str(obj.get("@name"))
-        os_type = from_str(obj.get("@OSType"))
-        state_file = from_str(obj.get("@stateFile"))
-        current_snapshot = from_str(obj.get("@currentSnapshot"))
-        snapshot_folder = from_str(obj.get("@snapshotFolder"))
-        current_state_modified = from_stringified_bool(from_str(obj.get("@currentStateModified")))
-        last_state_change = from_datetime(obj.get("@lastStateChange"))
-        media_registry = MediaRegistry.from_dict(obj.get("MediaRegistry"))
-        extra_data = ExtraData.from_dict(obj.get("ExtraData"))
-        snapshot = Snapshot.from_dict(obj.get("Snapshot"))
-        hardware = Hardware.from_dict(obj.get("Hardware"))
-        groups = Groups.from_dict(obj.get("Groups"))
+        uuid = from_str(tryget(obj,"@uuid"))
+        name = from_str(tryget(obj,"@name"))
+        os_type = from_str(tryget(obj,"@OSType"))
+        state_file = from_str(tryget(obj,"@stateFile"))
+        current_snapshot = from_str(tryget(obj,"@currentSnapshot"))
+        snapshot_folder = from_str(tryget(obj,"@snapshotFolder"))
+        current_state_modified = from_stringified_bool(from_str(tryget(obj,"@currentStateModified")))
+        last_state_change = from_datetime(tryget(obj,"@lastStateChange"))
+        media_registry = MediaRegistry.from_dict(tryget(obj,"MediaRegistry"))
+        extra_data = ExtraData.from_dict(tryget(obj,"ExtraData"))
+        snapshot = Snapshot.from_dict(tryget(obj,"Snapshot"))
+        hardware = Hardware.from_dict(tryget(obj,"Hardware"))
+        groups = Groups.from_dict(tryget(obj,"Groups"))
         return Machine(uuid, name, os_type, state_file, current_snapshot, snapshot_folder, current_state_modified, last_state_change, media_registry, extra_data, snapshot, hardware, groups)
 
     def to_dict(self) -> dict:
@@ -888,9 +894,9 @@ class VirtualBox:
     @staticmethod
     def from_dict(obj: Any) -> 'VirtualBox':
         assert isinstance(obj, dict)
-        xmlns = from_str(obj.get("@xmlns"))
-        version = from_str(obj.get("@version"))
-        machine = Machine.from_dict(obj.get("Machine"))
+        xmlns = from_str(tryget(obj,"@xmlns"))
+        version = from_str(tryget(obj,"@version"))
+        machine = Machine.from_dict(tryget(obj,"Machine"))
         return VirtualBox(xmlns, version, machine)
 
     def to_dict(self) -> dict:
@@ -910,7 +916,7 @@ class Welcome1:
     @staticmethod
     def from_dict(obj: Any) -> 'Welcome1':
         assert isinstance(obj, dict)
-        virtual_box = VirtualBox.from_dict(obj.get("VirtualBox"))
+        virtual_box = VirtualBox.from_dict(tryget(obj,"VirtualBox"))
         return Welcome1(virtual_box)
 
     def to_dict(self) -> dict:
