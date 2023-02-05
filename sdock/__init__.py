@@ -1,8 +1,26 @@
-import os, sys, requests, time
+import os, sys, requests, time, subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
 from xsdata.formats.dataclass.parsers import XmlParser
+
+def cmd(cmd,display=True, lines=False):
+	output_contents = ""
+	if display:
+		print(cmd)
+	process = subprocess.Popen(cmd,shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,bufsize=1,encoding='utf-8', universal_newlines=True, close_fds=True)
+	while True:
+		out = process.stdout.readline()
+		if out == '' and process.poll() != None:
+			break
+		if out != '':
+			if display:
+				sys.stdout.write(out)
+			output_contents += out
+			sys.stdout.flush()
+	if not lines:
+		return output_contents
+	return [x for x in output_contents.split('\n') if x.strip() != '']
 
 def wget(url, verify=True):
 	to = url.split('/')[-1].replace('%20','_')
@@ -62,6 +80,10 @@ def checkPort(port):
 def getPort(ports=[], prefix="-p"):
 	if ports is None or ports == []:
 		return ''
+	if not isinstance(ports, list):
+		ports = [ports]
+	if prefix is None:
+		prefix = ''
 	return ' '.join([
 		f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
 	])
@@ -177,6 +199,7 @@ class vb:
 	sharedfolder: str = None
 	uploadfiles:list = field(default_factory=list)
 	vboxmanage: str = "VBoxManage"
+	vb_path: str = None
 	headless: bool = True
 	#cmds_to_exe_with_network:list = field(default_factory=list)
 	#cmds_to_exe_without_network:list = field(default_factory=list)
@@ -220,6 +243,56 @@ class vb:
 
 	def __shared_folder(self, folder):
 		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
+
+	def add_snapshot_folder(self, snapshot_folder):
+		if False:
+			import datetime, uuid
+			from copy import deepcopy as dc
+			from pathlib import Path
+			import virtualbox_gen as vb_struct
+
+			#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-showvminfo.html
+			#VBoxManage showvminfo <X> --machinereadable
+			machine_info = cmd(
+				"{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname)
+			)
+			config_file = None
+			for machine_info_line in machine_info:
+				if machine_info_line.startswith("CfgFile"):
+					config_file = machine_info_line.replace("CfgFile=",'').replace('"','').strip()
+
+			parser = XmlParser()
+			og_config = parser.from_path(Path(config_file), vb_struct.VirtualBox)
+
+			save_files,vdi_file = [],None
+			for filename in os.scandir(snapshot_folder):
+				if filename.is_file():
+					if filename.endswith('.sav'):
+						save_files += [filename]
+					if filename.endswith('.vdi'):
+						vdi_file = filename
+
+			"""
+			VDI located in StorageControllers-attachedDevice-Image (uuid):> {06509f60-d51f-4ce4-97ed-f83cff79d93e}
+			Also located in Machine -> MediaRegistry -> HardDisks -> HardDisk
+			"""
+
+			#https://www.tutorialspoint.com/How-to-sort-a-Python-date-string-list
+			save_files.sort(key=lambda date: datetime.strptime(date.replace('.sav',''), "%Y-%m-%dT%H:%M:%S.%6%z"))
+
+			copy_hardware=dc(og_config.machine.hardware)
+			top_snapshot = vb_struct.Snapshot()
+			for save_file in save_files:
+				pass
+
+			snapshot = vb_struct.Snapshot(
+				uuid=str(uuid.uuid4()),
+				name="Latest Snapshot",
+				time_stamp=save_files[-1].replace('.sav',''),
+				state_file=os.path.join(snapshot_folder,save_files[-1]),
+				hardware=copy_hardware
+			)
+			snapshot.snapshots.snapshot.append()
 
 	def import_ova(self, ovafile):
 		self.ovafile = ovafile

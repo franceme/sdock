@@ -365,19 +365,6 @@ class SharedFolder:
         }
     )
 
-@dataclass
-class Snapshots:
-    class Meta:
-        namespace = "http://www.virtualbox.org/"
-
-    snapshot: Optional["Snapshot"] = field(
-        default=None,
-        metadata={
-            "name": "Snapshot",
-            "type": "Element",
-        }
-    )
-
 
 @dataclass
 class Vrdeproperties:
@@ -1052,6 +1039,18 @@ class Hardware:
         }
     )
 
+@dataclass
+class Snapshots:
+    class Meta:
+        namespace = "http://www.virtualbox.org/"
+
+    snapshot: List[object] = field(
+        default=list,
+        metadata={
+            "name": "Snapshot",
+            "type": "Element",
+        }
+    )
 
 @dataclass
 class Snapshot:
