@@ -251,7 +251,7 @@ class vb:
 		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
 
 	def add_snapshot_folder(self, snapshot_folder):
-		if True:
+		if False:
 			import datetime, uuid
 			from copy import deepcopy as dc
 			from pathlib import Path
@@ -261,23 +261,30 @@ class vb:
 			#VBoxManage showvminfo <X> --machinereadable
 
 			machine_info = cmd(
-				"{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname)
+				"{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname), lines=True
 			)
 			config_file = None
 			for machine_info_line in machine_info:
+				machine_info_line = machine_info_line.strip()
 				if machine_info_line.startswith("CfgFile"):
 					config_file = machine_info_line.replace("CfgFile=",'').replace('"','').strip()
 
 			parser = XmlParser()
 			og_config = parser.from_path(Path(config_file), vb_struct.VirtualBox)
-
+			
+			#Fix the VMDK Potential
 			save_files,vdi_file = [],None
+			vmdk_files = []
 			for filename in os.scandir(snapshot_folder):
 				if os.path.isfile(filename.path):
 					if filename.name.endswith('.sav'):
 						save_files += [filename.path]
 					if filename.name.endswith('.vdi'):
 						vdi_file = filename.path
+					if filename.name.endswith('.vmdk'):
+						vmdk_files += [filename.path]
+				print(filename.name)
+			print(vdi_file)
 
 			"""
 			VDI located in StorageControllers-attachedDevice-Image (uuid):> {06509f60-d51f-4ce4-97ed-f83cff79d93e}
