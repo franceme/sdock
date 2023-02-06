@@ -267,6 +267,7 @@ class vb:
 			for machine_info_line in machine_info:
 				machine_info_line = machine_info_line.strip()
 				if machine_info_line.startswith("CfgFile"):
+					print(machine_info_line)
 					config_file = machine_info_line.replace("CfgFile=",'').replace('"','').strip()
 
 			parser = XmlParser()
