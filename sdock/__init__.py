@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
 from xsdata.formats.dataclass.parsers import XmlParser
+from xsdata.formats.dataclass.serializers import XmlSerializer
+from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
 def cmd(cmd,display=True, lines=False):
 	output_contents = ""
@@ -40,7 +42,6 @@ def extract_file_from_zip(local_zipfile, extractedfile):
 
 	return extractedfile if os.path.exists(extractedfile) else None
 
-
 def extract_ova_from_zip(local_zipfile):
 	if False:
 		import zipfile
@@ -77,16 +78,21 @@ def checkPort(port):
 	sock.close()
 	return result
 
-def getPort(ports=[], prefix="-p"):
+def getPort(ports=[], prefix="-p",dup=True):
 	if ports is None or ports == []:
 		return ''
 	if not isinstance(ports, list):
 		ports = [ports]
 	if prefix is None:
 		prefix = ''
-	return ' '.join([
-		f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
-	])
+	if dup:
+		return ' '.join([
+			f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
+		])
+	else: #Created a flag to support the direct usage of the port instead of linking it to the original port
+		return ' '.join([
+			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports
+		])
 
 def exe(string):
 	print(string)
@@ -245,14 +251,15 @@ class vb:
 		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
 
 	def add_snapshot_folder(self, snapshot_folder):
-		if False:
+		if True:
 			import datetime, uuid
 			from copy import deepcopy as dc
 			from pathlib import Path
-			import virtualbox_gen as vb_struct
+			import sdock.vbgen as vb_struct
 
 			#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-showvminfo.html
 			#VBoxManage showvminfo <X> --machinereadable
+
 			machine_info = cmd(
 				"{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname)
 			)
@@ -266,11 +273,11 @@ class vb:
 
 			save_files,vdi_file = [],None
 			for filename in os.scandir(snapshot_folder):
-				if filename.is_file():
-					if filename.endswith('.sav'):
-						save_files += [filename]
-					if filename.endswith('.vdi'):
-						vdi_file = filename
+				if os.path.isfile(filename.path):
+					if filename.name.endswith('.sav'):
+						save_files += [filename.path]
+					if filename.name.endswith('.vdi'):
+						vdi_file = filename.path
 
 			"""
 			VDI located in StorageControllers-attachedDevice-Image (uuid):> {06509f60-d51f-4ce4-97ed-f83cff79d93e}
@@ -278,21 +285,117 @@ class vb:
 			"""
 
 			#https://www.tutorialspoint.com/How-to-sort-a-Python-date-string-list
-			save_files.sort(key=lambda date: datetime.strptime(date.replace('.sav',''), "%Y-%m-%dT%H:%M:%S.%6%z"))
+			save_files.sort(key=lambda date: datetime.datetime.strptime('-'.join(date.replace('Snapshots/','').replace('.sav','').split("-")[:-1]), "%Y-%m-%dT%H-%M-%S"))
 
 			copy_hardware=dc(og_config.machine.hardware)
-			top_snapshot = vb_struct.Snapshot()
-			for save_file in save_files:
-				pass
+			#save_files.reverse()
+			ini_snapshot = vb_struct.Snapshot(
+					uuid = "{"+str(uuid.uuid4())+"}",
+					name = "SnapShot := 0",
+					#time_stamp=save_file_date,
+					#state_file=X,
+					hardware=copy_hardware,
+				)
 
-			snapshot = vb_struct.Snapshot(
-				uuid=str(uuid.uuid4()),
-				name="Latest Snapshot",
-				time_stamp=save_files[-1].replace('.sav',''),
-				state_file=os.path.join(snapshot_folder,save_files[-1]),
-				hardware=copy_hardware
+			new_storage_controller = vb_struct.StorageController(
+				name="SATA",
+				type="AHCI",
+				port_count=1,
+				use_host_iocache=False,
+				bootable=True,
+				ide0_master_emulation_port=0,
+				ide0_slave_emulation_port=1,
+				ide1_master_emulation_port=2,
+				ide1_slave_emulation_port=3,
+				# attached_device=""
 			)
-			snapshot.snapshots.snapshot.append()
+			new_storage_controller.attached_device.append(vb_struct.AttachedDevice(
+				type="HardDisk",
+				hotpluggable=False,
+				port=0,
+				device=0,
+				image=vb_struct.Image(
+					uuid=os.path.basename(vdi_file).replace(".vdi", "")
+				)
+			))
+			#ini_snapshot.hardware.storage_controllers.storage_controller = new_storage_controller
+
+			#og_config.machine.current_snapshot = ini_snapshot.uuid
+			og_config.machine.snapshot = ini_snapshot
+
+			last_snapshot = ini_snapshot
+
+
+			for save_file in save_files:
+				save_file_date = save_file.replace('.sav','')
+				temp_snapshot = vb_struct.Snapshot(
+					uuid = "{"+str(uuid.uuid4())+"}",
+					name = "SnapShot := {0}".format(save_file_date),
+					time_stamp=save_file_date,
+					#state_file=X,
+					hardware=copy_hardware,
+				)
+
+				if save_file == save_files[-1]: #LAST ITERATION
+					og_config.machine.current_snapshot = temp_snapshot.uuid
+
+					new_storage_controller = vb_struct.StorageController(
+						name="SATA",
+						type="AHCI",
+						port_count=1,
+						use_host_iocache=False,
+						bootable=True,
+						ide0_master_emulation_port=0,
+						ide0_slave_emulation_port=1,
+						ide1_master_emulation_port=2,
+						ide1_slave_emulation_port=3,
+						#attached_device=""
+					)
+					new_storage_controller.attached_device.append(vb_struct.AttachedDevice(
+						type="HardDisk",
+						hotpluggable=False,
+						port=0,
+						device=0,
+						image=vb_struct.Image(
+							uuid=os.path.basename(vdi_file).replace(".vdi","")
+						)
+					))
+
+					temp_snapshot.hardware.storage_controllers.storage_controller = new_storage_controller
+					og_config.machine.current_snapshot = temp_snapshot.uuid
+					last_snapshot.snapshots = vb_struct.Snapshots(
+						snapshot=[temp_snapshot]
+					)
+
+					last_snapshot = temp_snapshot
+				else:
+					last_snapshot.snapshots = vb_struct.Snapshots(
+						[temp_snapshot]
+					)
+					last_snapshot = temp_snapshot
+
+			og_config.machine.media_registry.hard_disks.hard_disk.hard_disk = vb_struct.HardDisk(
+				uuid=os.path.basename(vdi_file).replace(".vdi",""),
+				location=vdi_file,
+				format="vdi"
+			)
+			config = SerializerConfig(pretty_print=True)
+			serializer = XmlSerializer(config=config)
+			og_config_string = serializer.render(og_config)
+
+			for remove,replacewith in [
+				('xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ',None),
+				(' xsi:type="ns0:Snapshot"',None),
+				('<ns0:','<'),
+				('</ns0:','</'),
+				('xmlns:ns0','xmlns'),
+			]:
+				og_config_string = og_config_string.replace(remove,replacewith or '')
+
+
+			os.system("cp {0} {0}.OG".format(config_file))
+			with open(config_file,"w+") as writer:
+				writer.write(og_config_string)
 
 	def import_ova(self, ovafile):
 		self.ovafile = ovafile
