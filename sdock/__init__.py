@@ -708,9 +708,9 @@ end
 def install_docker():
 	#https://docs.docker.com/engine/install/ubuntu/
 	for string in [
-		"sudo apt-get update",
-		"sudo apt-get install ca-certificates curl gnupg",
-		"sudo install -m 0755 -d /etc/apt/keyrings",
+		"yes|sudo apt-get update",
+		"yes|sudo apt-get install ca-certificates curl gnupg",
+		"yes|sudo install -m 0755 -d /etc/apt/keyrings",
 		"curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg",
 		"sudo chmod a+r /etc/apt/keyrings/docker.gpg",
 		"""echo \
@@ -719,8 +719,8 @@ def install_docker():
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 		""",
 		"sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
-		"sudo apt-get update",
-		"sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
+		"yes|sudo apt-get update",
+		"yes|sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
 	]:
 		try:
 			cmd(string)
