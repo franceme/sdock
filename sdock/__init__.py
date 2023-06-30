@@ -151,6 +151,7 @@ class dock:
 		else:
 			exchanged = ""
 
+		no_mount = (self.mountto is None or self.mountto.strip() == '') and (self.mountfrom is None or self.mountfrom.strip() == '')
 		dir = '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 		use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom else dir)
 
@@ -175,7 +176,7 @@ class dock:
 			dockerInDocker,
 			'--rm' if self.remove else '',
 			'-d' if self.detach else '-it',
-			'-v "{0}:{1}"'.format(use_dir, self.mountto),
+			'' if no_mount else '-v "{0}:{1}"'.format(use_dir, self.mountto),
 			exchanged,
 			network,
 			getPort(self.ports),
