@@ -98,6 +98,8 @@ def exe(string):
 	print(string)
 	os.system(string)
 
+cur_dir = lambda: '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
+
 @dataclass
 class dock:
 	"""Class for keeping track of an item in inventory."""
@@ -152,7 +154,7 @@ class dock:
 			exchanged = ""
 
 		no_mount = (self.mountto is None or self.mountto.strip() == '') and (self.mountfrom is None or self.mountfrom.strip() == '')
-		dir = '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
+		dir = cur_dir()
 		use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom else dir)
 
 		if self.nocmd:
