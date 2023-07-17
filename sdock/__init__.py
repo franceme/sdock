@@ -1,4 +1,4 @@
-import os, sys, requests, time, subprocess
+import os, sys, requests, time, subprocess, mystring
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
@@ -6,23 +6,10 @@ from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
-def cmd(cmd,display=True, lines=False):
-	output_contents = ""
-	if display:
-		print(cmd)
-	process = subprocess.Popen(cmd,shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,bufsize=1,encoding='utf-8', universal_newlines=True, close_fds=True)
-	while True:
-		out = process.stdout.readline()
-		if out == '' and process.poll() != None:
-			break
-		if out != '':
-			if display:
-				sys.stdout.write(out)
-			output_contents += out
-			sys.stdout.flush()
-	if not lines:
-		return output_contents
-	return [x for x in output_contents.split('\n') if x.strip() != '']
+def is_docker():
+	path = '/proc/self/cgroup'
+	return (os.path.exists('/.dockerenv') or os.path.isfile(path) and
+			any('docker' in line for line in open(path)))
 
 def wget(url, verify=True):
 	to = url.split('/')[-1].replace('%20','_')
@@ -94,10 +81,6 @@ def getPort(ports=[], prefix="-p",dup=True):
 			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports
 		])
 
-def exe(string):
-	print(string)
-	os.system(string)
-
 cur_dir = lambda: '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 
 @dataclass
@@ -107,7 +90,6 @@ class dock:
 	image: str = "frantzme/pythondev:lite"
 	ports: list = field(default_factory=list)
 	cmd: str = None
-	nocmd: bool = False
 	nonet: bool = False
 	dind: bool = False
 	shared: bool = False
@@ -125,6 +107,27 @@ class dock:
 	preClean: bool = False
 	extra: str = None
 	save_host_dir: bool = False
+	docker_username:str="frantzme"
+
+	def getDockerImage(self, string, usebaredocker=False):
+		if not usebaredocker and "/" not in string:
+			use_lite = ":lite" in string
+			if "pydev" in string:
+				output = f"{self.docker_username}/pythondev:latest"
+			elif "pytest" in string:
+				output = f"{self.docker_username}/pythontesting:latest"
+			else:
+				output = f"{self.docker_username}/{string}:latest"
+			if use_lite:
+				output = output.replace(':latest','') + ":lite"
+			output = output.replace(':latest:latest',':latest').replace(':lite:lite',':lite')
+
+			if usebaredocker:
+				output = output.replace("{}/".format(docker_username),"")
+
+			return output
+		else:
+			return string
 
 	def clean(self):
 		return "; ".join([
@@ -137,6 +140,30 @@ class dock:
 			"{} container prune -f".format(self.docker),
 			"{} builder prune -f -a".format(self.docker)
 		])
+	
+	def kill(self, name:str=None, image:str=None):
+		cmd = ""
+		if name:
+			cmd += '; '.join([
+				"{0} container stop $({0} container ls -q --filter name={1})".format(self.docker, name),
+				"{0} rm -v {1}".format(self.docker, name)
+			]) + ";"
+		if image:
+			cmd += '; '.join([
+				"{0} container ls -q --filter ancestor={1} |xargs {0} container stop".format(self.docker, image)
+			]) + ";"
+
+			repo, tag = image.split(":")
+			if tag:
+				cmd += '; '.join([
+					"{0} images -a |grep {1}|grep {2}|awk '{{print $3}}'|xargs {0} rmi".format(self.docker, repo, tag)
+				]) + ";"
+			else:
+				cmd += '; '.join([
+					"{0} images -a |grep {1}|awk '{{print $3}}'|xargs {0} rmi".format(self.docker, repo, tag)
+				]) + ";"
+			else:
+		return cmd
 
 	def string(self):
 		if self.dind or self.shared:
@@ -157,10 +184,13 @@ class dock:
 		dir = cur_dir()
 		use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom else dir)
 
-		if self.nocmd:
-			cmd = ''
+		if self.cmd:
+			if isinstance(self.cmd, list):
+				cmd = ' '.join(self.cmd)
+			else:
+				cmd = self.cmd 
 		else:
-			cmd = self.cmd or '/bin/bash'
+			cmd = '/bin/bash'
 
 		network = ""
 		if self.nonet:
@@ -218,7 +248,7 @@ class vb:
 		if self.headless:
 			cmd += " --type headless"
 
-		exe(cmd)
+		mystring.string(cmd).exec()
 
 	def vbexe(self, cmd):
 		string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
@@ -227,31 +257,31 @@ class vb:
 			string += " --username {0} ".format(self.username)
 
 		string += str(" --exe \"C:\\Windows\\System32\\cmd.exe\" -- cmd.exe/arg0 /C '" + cmd.replace("'","\'") + "'")
-		exe(string)
+		mystring.string(string).exec()
 
 	def snapshot_take(self,snapshotname):
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} take {2}".format(self.vboxmanage,self.vmname, snapshotname))
+		mystring.string("{0} snapshot {1} take {2}".format(self.vboxmanage,self.vmname, snapshotname)).exec()
 
 	def snapshot_load(self,snapshotname):
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} restore {2}".format(self.vboxmanage,self.vmname, snapshotname))
+		mystring.string("{0} snapshot {1} restore {2}".format(self.vboxmanage,self.vmname, snapshotname)).exec()
 
 	def snapshot_list(self):
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} list".format(self.vboxmanage,self.vmname))
+		mystring.string("{0} snapshot {1} list".format(self.vboxmanage,self.vmname)).exec()
 
 	def snapshot_delete(self,snapshotname):
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} delete {2}".format(self.vboxmanage,self.vmname, snapshotname))
+		mystring.string("{0} snapshot {1} delete {2}".format(self.vboxmanage,self.vmname, snapshotname)).exec()
 
 	def export_to_ova(self,ovaname):
 		#https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
-		exe("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,self.vmname, ovaname))
+		mystring.string("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,self.vmname, ovaname)).exec()
 
 	def __shared_folder(self, folder):
-		exe("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder))
+		mystring.string("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(self.vboxmanage, self.vmname, folder)).exec()
 
 	def add_snapshot_folder(self, snapshot_folder):
 		if False:
@@ -263,9 +293,9 @@ class vb:
 			#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-showvminfo.html
 			#VBoxManage showvminfo <X> --machinereadable
 
-			machine_info = cmd(
+			machine_info = mystring.string(
 				"{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname), lines=True
-			)
+			).exec()
 			config_file = None
 			for machine_info_line in machine_info:
 				machine_info_line = machine_info_line.strip()
@@ -411,23 +441,23 @@ class vb:
 	def import_ova(self, ovafile):
 		self.ovafile = ovafile
 
-		exe("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram))
+		mystring.string("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram)).exec()
 
 	def disable(self):
 		if self.disablehosttime:
-			exe("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname))
+			mystring.string("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.vboxmanage, self.vmname)).exec()
 
 		if self.biosoffset:
-			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset))
+			mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, self.biosoffset)).exec()
 
 		if self.vmdate:
 			ms = round((self.vmdate - datetime.now().date()).total_seconds()*1000)
 
-			exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms))
+			mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms)).exec()
 
 		if self.network is None or self.disablenetwork:
 			network = "null"
-		exe("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network))
+		mystring.string("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network)).exec()
 
 	def prep(self):
 		if self.ovafile:
@@ -446,12 +476,12 @@ class vb:
 				self.vbexe(cmd)
 
 			#Disable the Network
-			exe("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname))
+			mystring.string("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname)).exec()
 			for cmd in self.cmds_to_exe_without_network:
 				self.vbexe(cmd)
 
 			#Turn on the Network
-			exe("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname))
+			mystring.string("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname)).exec()
 			self.stop()
 		
 		self.disable()
@@ -464,13 +494,13 @@ class vb:
 		self.run(True)
 	
 	def off(self):
-		exe("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname))
+		mystring.string("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname)).exec()
 
 	def __exit__(self, type, value, traceback):
 		self.stop()
 	
 	def uploadfile(self, file:str):
-		exe("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username))
+		mystring.string("{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(self.vboxmanage, self.vmname, file, self.username)).exec()
 	
 	def clean(self, deletefiles:bool=True):
 		cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.vmname)
@@ -480,7 +510,7 @@ class vb:
 			if self.ovafile:
 				os.remove(self.ovafile)
 
-		exe(cmd)
+		mystring.string(cmd).exec()
 	
 	def destroy(self, deletefiles:bool=True):
 		self.clean(deletefiles)
@@ -538,28 +568,28 @@ class vagrant(object):
 	def snapshot_take(self,snapshotname):
 		vb_name = self.vagrant_name
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} take {2}".format(self.vboxmanage,vb_name, snapshotname))
+		mystring.string("{0} snapshot {1} take {2}".format(self.vboxmanage,vb_name, snapshotname)).exec()
 
 	def snapshot_load(self,snapshotname):
 		vb_name = self.vagrant_name
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} restore {2}".format(self.vboxmanage,vb_name, snapshotname))
+		mystring.string("{0} snapshot {1} restore {2}".format(self.vboxmanage,vb_name, snapshotname)).exec()
 
 	def snapshot_list(self):
 		vb_name = self.vagrant_name
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} list".format(self.vboxmanage,vb_name))
+		mystring.string("{0} snapshot {1} list".format(self.vboxmanage,vb_name)).exec()
 
 	def snapshot_delete(self,snapshotname):
 		vb_name = self.vagrant_name
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-		exe("{0} snapshot {1} delete {2}".format(self.vboxmanage,vb_name, snapshotname))
+		mystring.string("{0} snapshot {1} delete {2}".format(self.vboxmanage,vb_name, snapshotname)).exec()
 
 	def export_to_ova(self,ovaname):
 		vb_name = self.vagrant_name
 		#https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
 		#https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
-		exe("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,vb_name, ovaname))
+		mystring.string("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage,vb_name, ovaname)).exec()
 
 	#https://jd-bots.com/2021/05/15/how-to-run-powershell-script-on-windows-startup/
 	#https://stackoverflow.com/questions/20575257/how-do-i-run-a-powershell-script-when-the-computer-starts
@@ -673,36 +703,36 @@ end
 			vagrantfile.write(contents)
 
 	def on(self):
-		exe(""" vagrant up""")
+		mystring.string(""" vagrant up""").exec()
 
 	def resume(self):
 		if self.vagrant_name.strip() is not None and self.vagrant_name.strip() != '':
 			if self.vmdate:
 				diff_days = (self.vmdate - datetime.now().date())
 				ms = round(diff_days.total_seconds()*1000)
-				exe("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vb_box_exe, self.vagrant_name, ms))
+				mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vb_box_exe, self.vagrant_name, ms)).exec()
 
 			cmd = "{0} startvm {1}".format(self.vb_box_exe,self.vagrant_name)
 			if self.headless:
 				cmd += " --type headless"
 
-			exe(cmd)
+			mystring.string(cmd).exec()
 		else:
 			print("Vagrant VM hasn't been created yet")
 
 	def off(self):
 		self.vagrant_name
-		exe("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name))
+		mystring.string("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name)).exec()
 	
 	def destroy(self,emptyflag=False):
 		self.vagrant_name
-		exe(""" vagrant destroy -f """)
+		mystring.string(""" vagrant destroy -f """).exec()
 		for foil in ["Vagrant", "on_start*", "on_login*"]:
-			exe("rm {0}".format(foil))
-		exe("yes|rm -r .vagrant/")
+			mystring.string("rm {0}".format(foil)).exec()
+		mystring.string("yes|rm -r .vagrant/").exec()
 		for foil in list(self.uploadfiles):
 			if foil not in self.save_files:
-				exe("rm {0}".format(foil))
+				mystring.string("rm {0}".format(foil)).exec()
 
 	def clean(self,emptyflag=False):
 		self.destroy(emptyflag)
@@ -716,5 +746,5 @@ def install_docker(save_file:bool=False):
 		'echo "Done"' if save_file else "echo \"Done\" && rm get-docker.sh"
 	]:
 		try:
-			cmd(string)
+			mystring.string(string).exec()
 		except: pass
