@@ -81,7 +81,8 @@ def getPort(ports=[], prefix="-p",dup=True):
 			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports
 		])
 
-cur_dir = lambda: '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
+def cur_dir():
+	return '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 
 @dataclass
 class dock:
