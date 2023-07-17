@@ -84,6 +84,26 @@ def getPort(ports=[], prefix="-p",dup=True):
 def cur_dir():
 	return '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 
+def dockerImage(docker_username, string, usebaredocker=False):
+	if not usebaredocker and "/" not in string:
+		use_lite = ":lite" in string
+		if "pydev" in string:
+			output = f"{docker_username}/pythondev:latest"
+		elif "pytest" in string:
+			output = f"{docker_username}/pythontesting:latest"
+		else:
+			output = f"{docker_username}/{string}:latest"
+		if use_lite:
+			output = output.replace(':latest','') + ":lite"
+		output = output.replace(':latest:latest',':latest').replace(':lite:lite',':lite')
+
+		if usebaredocker:
+			output = output.replace("{}/".format(docker_username),"")
+
+		return output
+	else:
+		return string
+
 @dataclass
 class dock:
 	"""Class for keeping track of an item in inventory."""
@@ -115,25 +135,6 @@ class dock:
 	def cur_dir():
 		return '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 
-	def getDockerImage(self, string, usebaredocker=False):
-		if not usebaredocker and "/" not in string:
-			use_lite = ":lite" in string
-			if "pydev" in string:
-				output = f"{self.docker_username}/pythondev:latest"
-			elif "pytest" in string:
-				output = f"{self.docker_username}/pythontesting:latest"
-			else:
-				output = f"{self.docker_username}/{string}:latest"
-			if use_lite:
-				output = output.replace(':latest','') + ":lite"
-			output = output.replace(':latest:latest',':latest').replace(':lite:lite',':lite')
-
-			if usebaredocker:
-				output = output.replace("{}/".format(docker_username),"")
-
-			return output
-		else:
-			return string
 
 	def clean(self):
 		return "; ".join([
