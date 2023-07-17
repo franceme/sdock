@@ -162,7 +162,6 @@ class dock:
 				cmd += '; '.join([
 					"{0} images -a |grep {1}|awk '{{print $3}}'|xargs {0} rmi".format(self.docker, repo, tag)
 				]) + ";"
-			else:
 		return cmd
 
 	def string(self):
