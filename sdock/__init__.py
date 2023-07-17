@@ -162,35 +162,36 @@ class dock:
 		return True
 
 	def stop_image(self):
-		"""
-		images = []
-		for image_line in mystring.string("{0} images -a".format("docker")).exec(lines=True):
-			if not image_line.empty and "REPOSITORY" not in image_line:
-				image_break = mystring.lyst(image_line.split(" ")).trims(lambda x:mystring.string(x).empty)
-				images += [{
-					"repo":image_break[0],
-					"tag":image_break[1],
-					"id":image_break[2],
-				}]
+		if True:
+			images = []
+			for image_line in mystring.string("{0} images -a".format("docker")).exec(lines=True):
+				if not image_line.empty and "REPOSITORY" not in image_line:
+					image_break = mystring.lyst(image_line.split(" ")).trims(lambda x:mystring.string(x).empty)
+					images += [{
+						"repo":image_break[0],
+						"tag":image_break[1],
+						"id":image_break[2],
+					}]
 
-		to_kill = []
-		for image_info in images:
-			if name:
-				print("Not supported yet")
-			elif image:
-				tag = None
-				if ":" in image:
-					image, tag = image.split(":")
-				if image == image_info['repo'] and (not tag or tag == image_info['tag']):
-					to_kill += [image_info['id']]
+			to_kill = []
+			for image_info in images:
+				if name:
+					print("Not supported yet")
+				elif image:
+					tag = None
+					if ":" in image:
+						image, tag = image.split(":")
+					if image == image_info['repo'] and (not tag or tag == image_info['tag']):
+						to_kill += [image_info['id']]
 
-		for kill in to_kill:
-			mystring.string("{0} rmi {1}".format("docker", kill)).exec()
-		"""
-		if self.docker_id is None:
-			self.stop_container()
+			for kill in to_kill:
+				mystring.string("{0} rmi {1}".format("docker", kill)).exec()
+		else:
+			if self.docker_id is None:
+				self.stop_container()
 
-		mystring.string("{0} rmi {1}".format("docker", self.docker_id)).exec()
+			mystring.string("{0} rmi {1}".format("docker", self.docker_id)).exec()
+
 		return True
 
 	def kill(self):
