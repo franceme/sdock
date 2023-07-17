@@ -111,6 +111,10 @@ class dock:
 	docker_username:str="frantzme"
 	docker_id:str=None
 
+	@staticmethod
+	def cur_dir():
+		return '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
+
 	def getDockerImage(self, string, usebaredocker=False):
 		if not usebaredocker and "/" not in string:
 			use_lite = ":lite" in string
