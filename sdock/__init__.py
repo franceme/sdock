@@ -84,7 +84,7 @@ def getPort(ports=[], prefix="-p",dup=True):
 def cur_dir():
 	return '%cd%' if sys.platform in ['win32', 'cygwin'] else '`pwd`'
 
-def dockerImage(docker_username, string, usebaredocker=False):
+def dockerImage(string, usebaredocker=False, docker_username="frantzme"):
 	if not usebaredocker and "/" not in string:
 		use_lite = ":lite" in string
 		if "pydev" in string:
