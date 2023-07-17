@@ -108,6 +108,7 @@ class dock:
 	extra: str = None
 	save_host_dir: bool = False
 	docker_username:str="frantzme"
+	docker_id:str=None
 
 	def getDockerImage(self, string, usebaredocker=False):
 		if not usebaredocker and "/" not in string:
@@ -131,38 +132,71 @@ class dock:
 
 	def clean(self):
 		return "; ".join([
-			"{} kill $({} ps -a -q)".format(self.docker, self.docker),
-			"{} kill $({} ps -q)".format(self.docker, self.docker),
-			"{} rm $({} ps -a -q)".format(self.docker, self.docker),
-			"{} rmi $({} images -q)".format(self.docker, self.docker),
-			"{} volume rm $({} volume ls -q)".format(self.docker, self.docker),
-			"{} image prune -f".format(self.docker),
-			"{} container prune -f".format(self.docker),
-			"{} builder prune -f -a".format(self.docker)
+			"{0} kill $({0} ps -a -q)".format(self.docker),
+			"{0} kill $({0} ps -q)".format(self.docker),
+			"{0} rm $({0} ps -a -q)".format(self.docker),
+			"{0} rmi $({0} images -q)".format(self.docker),
+			"{0} volume rm $({0} volume ls -q)".format(self.docker),
+			"{0} image prune -f".format(self.docker),
+			"{0} container prune -f".format(self.docker),
+			"{0} builder prune -f -a".format(self.docker)
 		])
-	
-	def kill(self, name:str=None, image:str=None):
-		cmd = ""
-		if name:
-			cmd += '; '.join([
-				"{0} container stop $({0} container ls -q --filter name={1})".format(self.docker, name),
-				"{0} rm -v {1}".format(self.docker, name)
-			]) + ";"
-		if image:
-			cmd += '; '.join([
-				"{0} container ls -q --filter ancestor={1} |xargs {0} container stop".format(self.docker, image)
-			]) + ";"
 
-			repo, tag = image.split(":")
-			if tag:
-				cmd += '; '.join([
-					"{0} images -a |grep {1}|grep {2}|awk '{{print $3}}'|xargs {0} rmi".format(self.docker, repo, tag)
-				]) + ";"
-			else:
-				cmd += '; '.join([
-					"{0} images -a |grep {1}|awk '{{print $3}}'|xargs {0} rmi".format(self.docker, repo, tag)
-				]) + ";"
-		return cmd
+	def stop_container(self):
+		if self.name:
+			base = my.string("{0} container ls -q --filter name={1}".format(self.docker,self.name))
+		elif self.image:
+			base = my.string("{0} container ls -q --filter ancestor={1}".format(self.docker,self.image))
+		else:
+			return False
+
+		self.docker_id = base.exec().strip()
+		my.string("{0} container stop {1}".format(self.docker, self.docker_id)).exec().strip()
+		return True
+
+	def stop_volume(self):
+		if self.docker_id is None:
+			self.stop_container()
+
+		my.string("{0} rm -v {1}".format(self.docker, self.docker_id)).exec().strip()
+		return True
+
+	def stop_image(self):
+		"""
+		images = []
+		for image_line in my.string("{0} images -a".format("docker")).exec(lines=True):
+			if not image_line.empty and "REPOSITORY" not in image_line:
+				image_break = my.lyst(image_line.split(" ")).trims(lambda x:my.string(x).empty)
+				images += [{
+					"repo":image_break[0],
+					"tag":image_break[1],
+					"id":image_break[2],
+				}]
+
+		to_kill = []
+		for image_info in images:
+			if name:
+				print("Not supported yet")
+			elif image:
+				tag = None
+				if ":" in image:
+					image, tag = image.split(":")
+				if image == image_info['repo'] and (not tag or tag == image_info['tag']):
+					to_kill += [image_info['id']]
+
+		for kill in to_kill:
+			my.string("{0} rmi {1}".format("docker", kill)).exec()
+		"""
+		if self.docker_id is None:
+			self.stop_container()
+
+		my.string("{0} rmi {1}".format("docker", kill)).exec()
+		return True
+
+	def kill(self):
+		self.stop_container()
+		self.stop_volume()
+		self.stop_image()
 
 	def string(self):
 		if self.dind or self.shared:
