@@ -144,29 +144,29 @@ class dock:
 
 	def stop_container(self):
 		if self.name:
-			base = my.string("{0} container ls -q --filter name={1}".format(self.docker,self.name))
+			base = mystring.string("{0} container ls -q --filter name={1}".format(self.docker,self.name))
 		elif self.image:
-			base = my.string("{0} container ls -q --filter ancestor={1}".format(self.docker,self.image))
+			base = mystring.string("{0} container ls -q --filter ancestor={1}".format(self.docker,self.image))
 		else:
 			return False
 
 		self.docker_id = base.exec().strip()
-		my.string("{0} container stop {1}".format(self.docker, self.docker_id)).exec().strip()
+		mystring.string("{0} container stop {1}".format(self.docker, self.docker_id)).exec().strip()
 		return True
 
 	def stop_volume(self):
 		if self.docker_id is None:
 			self.stop_container()
 
-		my.string("{0} rm -v {1}".format(self.docker, self.docker_id)).exec().strip()
+		mystring.string("{0} rm -v {1}".format(self.docker, self.docker_id)).exec().strip()
 		return True
 
 	def stop_image(self):
 		"""
 		images = []
-		for image_line in my.string("{0} images -a".format("docker")).exec(lines=True):
+		for image_line in mystring.string("{0} images -a".format("docker")).exec(lines=True):
 			if not image_line.empty and "REPOSITORY" not in image_line:
-				image_break = my.lyst(image_line.split(" ")).trims(lambda x:my.string(x).empty)
+				image_break = mystring.lyst(image_line.split(" ")).trims(lambda x:mystring.string(x).empty)
 				images += [{
 					"repo":image_break[0],
 					"tag":image_break[1],
@@ -185,12 +185,12 @@ class dock:
 					to_kill += [image_info['id']]
 
 		for kill in to_kill:
-			my.string("{0} rmi {1}".format("docker", kill)).exec()
+			mystring.string("{0} rmi {1}".format("docker", kill)).exec()
 		"""
 		if self.docker_id is None:
 			self.stop_container()
 
-		my.string("{0} rmi {1}".format("docker", kill)).exec()
+		mystring.string("{0} rmi {1}".format("docker", kill)).exec()
 		return True
 
 	def kill(self):
