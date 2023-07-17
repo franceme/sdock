@@ -175,12 +175,12 @@ class dock:
 
 			to_kill = []
 			for image_info in images:
-				if name:
+				if self.name:
 					print("Not supported yet")
-				elif image:
+				elif self.image:
 					tag = None
-					if ":" in image:
-						image, tag = image.split(":")
+					if ":" in self.image:
+						image, tag = self.image.split(":")
 					if image == image_info['repo'] and (not tag or tag == image_info['tag']):
 						to_kill += [image_info['id']]
 
