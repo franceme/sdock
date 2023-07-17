@@ -155,9 +155,14 @@ class dock:
 		return True
 
 	def stop_volume(self):
-		if self.docker_id is None:
-			self.stop_container()
+		if self.name:
+			base = mystring.string("{0} container ls -q --filter name={1}".format(self.docker,self.name))
+		elif self.image:
+			base = mystring.string("{0} container ls -q --filter ancestor={1}".format(self.docker,self.image))
+		else:
+			return False
 
+		self.docker_id = base.exec().strip()
 		mystring.string("{0} rm -v {1}".format(self.docker, self.docker_id)).exec().strip()
 		return True
 
