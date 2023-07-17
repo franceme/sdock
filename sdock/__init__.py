@@ -98,7 +98,7 @@ class dock:
 	remove: bool = True
 	mountto: str = "/sync"
 	mountfrom: str = None
-	name: str = "current_running"
+	name: str = None
 	login: bool = False
 	loggout: bool = False
 	logg: bool = False
@@ -190,10 +190,20 @@ class dock:
 		if self.docker_id is None:
 			self.stop_container()
 
-		mystring.string("{0} rmi {1}".format("docker", kill)).exec()
+		mystring.string("{0} rmi {1}".format("docker", self.docker_id)).exec()
 		return True
 
 	def kill(self):
+		"""
+		https://stackoverflow.com/questions/29406871/how-to-filter-docker-process-based-on-image
+		https://docs.docker.com/engine/reference/commandline/image_rm/
+		https://docs.docker.com/engine/reference/commandline/rmi/
+		https://docs.docker.com/engine/reference/commandline/stop/
+		https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+		https://contabo.com/blog/how-to-remove-docker-volumes-images-and-containers/
+		https://www.ibm.com/docs/en/coss/3.15.4?topic=container-stopping-running
+		https://nickjanetakis.com/blog/docker-tip-83-stop-docker-containers-by-name-pattern
+		"""
 		self.stop_container()
 		self.stop_volume()
 		self.stop_image()
