@@ -261,8 +261,8 @@ class dock:
 				my_save_host_dir = '--env="HOSTDIR={0}"'.format(dir)
 
 		raw_input = ''
-		if raw:
-			if isinstance(raw, list):
+		if self.raw:
+			if isinstance(self.raw, list):
 				raw_input = ' '.join(self.raw)
 			else:
 				raw_input = self.raw
