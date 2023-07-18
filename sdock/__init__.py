@@ -127,6 +127,7 @@ class dock:
 	postClean: bool = False
 	preClean: bool = False
 	extra: str = None
+	raw: str = None
 	save_host_dir: bool = False
 	docker_username:str="frantzme"
 	docker_id:str=None
@@ -259,6 +260,13 @@ class dock:
 			else:
 				my_save_host_dir = '--env="HOSTDIR={0}"'.format(dir)
 
+		raw_input = ''
+		if raw:
+			if isinstance(raw, list):
+				raw_input = ' '.join(self.raw)
+			else:
+				raw_input = self.raw
+
 		return str(self.clean()+";" if self.preClean else "") + "{0} run ".format(self.docker) + " ".join([
 			dockerInDocker,
 			'--rm' if self.remove else '',
@@ -270,6 +278,7 @@ class dock:
 			'--mac-address ' + str(self.macaddress) if self.macaddress else '',
 			self.extra if self.extra else '',
 			my_save_host_dir,
+			raw_input,
 			self.image,
 			cmd
 		]) + str(self.clean()+";" if self.postClean else "")
