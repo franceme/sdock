@@ -100,7 +100,7 @@ def dockerImage(string, usebaredocker=False, docker_username="frantzme"):
 		if usebaredocker:
 			output = output.replace("{}/".format(docker_username),"")
 
-		return ':'.join(text.split(":")[0:2]) #Fixes a problem where there's an output of :ui:latest
+		return ':'.join(output.split(":")[0:2]) #Fixes a problem where there's an output of :ui:latest
 	else:
 		return string
 
