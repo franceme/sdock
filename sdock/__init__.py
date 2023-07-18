@@ -100,7 +100,7 @@ def dockerImage(string, usebaredocker=False, docker_username="frantzme"):
 		if usebaredocker:
 			output = output.replace("{}/".format(docker_username),"")
 
-		return output
+		return ':'.join(text.split(":")[0:2]) #Fixes a problem where there's an output of :ui:latest
 	else:
 		return string
 
@@ -276,6 +276,9 @@ class dock:
 
 	def __str__(self):
 		return self.string()
+	
+	def compose(self, output_file:str=""):
+		#https://docs.docker.com/compose/gettingstarted/
 
 @dataclass
 class vb:
