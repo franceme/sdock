@@ -279,6 +279,7 @@ class dock:
 	
 	def compose(self, output_file:str=""):
 		#https://docs.docker.com/compose/gettingstarted/
+		return
 
 @dataclass
 class vb:
