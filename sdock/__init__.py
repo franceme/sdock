@@ -1,4 +1,4 @@
-import os, sys, requests, time, subprocess, mystring
+import os, sys, time, subprocess, mystring
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
@@ -10,13 +10,6 @@ def is_docker():
 	path = '/proc/self/cgroup'
 	return (os.path.exists('/.dockerenv') or os.path.isfile(path) and
 			any('docker' in line for line in open(path)))
-
-def wget(url, verify=True):
-	to = url.split('/')[-1].replace('%20','_')
-	if not os.path.exists(to):
-		resp = requests.get(url, allow_redirects=True,verify=verify)
-		open(to,'wb').write(resp.content)
-	return to
 
 def extract_file_from_zip(local_zipfile, extractedfile):
 	import zipfile

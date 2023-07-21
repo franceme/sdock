@@ -88,6 +88,10 @@ elif selfArg('zip'):
 # endregion
 # region Setup
 
+vb = [
+	"xsdata"
+]
+
 setup(
 	name=NAME,
 	version=VERSION,
@@ -108,6 +112,10 @@ setup(
 		"requests",
 		"xsdata"
 	],
+	extras_require={
+		"vb":vb,
+		"all":vb
+	},
 	include_package_data=True,
 	classifiers=[
 		'Programming Language :: Python',
