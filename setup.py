@@ -109,7 +109,7 @@ setup(
 	entry_points={
 	},
 	install_requires=[
-		"requests",
+		"mystring",
 		"xsdata"
 	],
 	extras_require={
