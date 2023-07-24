@@ -89,7 +89,8 @@ elif selfArg('zip'):
 # region Setup
 
 vb = [
-	"xsdata"
+	"xsdata",
+	"dicttoxml" #https://pypi.org/project/dicttoxml/
 ]
 
 setup(
