@@ -1,10 +1,14 @@
 import os, mystring
 from dataclasses import dataclass
 from datetime import datetime
+import vagrant as ogvag
+
+
+# https://github.com/pycontribs/python-vagrant/tree/main
 
 
 @dataclass
-class vagrant(object):
+class vagrant(ogvag.Vagrant):
     vagrant_base: str = "talisker/windows10pro",
     disablehosttime: bool = True,
     disablenetwork: bool = True,

@@ -91,6 +91,9 @@ elif selfArg('zip'):
 vb = [
 	"xsdata"
 ]
+vagrant = [
+	"python-vagrant"
+]
 
 setup(
 	name=NAME,
@@ -109,12 +112,12 @@ setup(
 	entry_points={
 	},
 	install_requires=[
-		"mystring",
-		"xsdata"
+		"mystring"
 	],
 	extras_require={
 		"vb":vb,
-		"all":vb
+		"vagrant":vagrant,
+		"all":vb+vagrant
 	},
 	include_package_data=True,
 	classifiers=[
