@@ -89,8 +89,7 @@ elif selfArg('zip'):
 # region Setup
 
 vb = [
-	"xsdata",
-	"remotevbox"
+	"xsdata"
 ]
 
 setup(

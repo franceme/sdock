@@ -5,25 +5,14 @@ from typing import List
 from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
-from dicttoxml import dicttoxml
+from vbox_extra.gen import VirtualBox
 
 """
-https://codebeautify.org/json-to-python-pojo-generator
-https://json2csharp.com/code-converters/json-to-python
-
-https://jsonformatter.org/json-to-python
-
-
-
-
-https://codebeautify.org/xml-to-python-pojo-generator
-https://www.davekuhlman.org/generateDS.html
-
 https://xsdata.readthedocs.io/en/latest/
 """
 
 @dataclass
-class vb:
+class vb(VirtualBox):
     """Class for keeping track of an item in inventory."""
     vmname: str = "takenname"
     username: str = None
