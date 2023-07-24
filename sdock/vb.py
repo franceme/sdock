@@ -5,7 +5,13 @@ from typing import List
 from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
-from vbox_extra.gen import VirtualBox,ExtraDataItem
+from vbox_extra.gen import VirtualBox,ExtraDataItem,Snapshots
+
+def add_snapshot(self:VirtualBox, snapshot:Snapshots):
+    #last_snapshot = self.snapshot.
+    return
+
+VirtualBox.add_snapshot = add_snapshot
 
 """
 https://xsdata.readthedocs.io/en/latest/
