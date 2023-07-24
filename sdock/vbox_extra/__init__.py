@@ -1,4 +1,4 @@
-from vbox.virtual_box import (
+from gen import (
     Adapter,
     AttachedDevice,
     AudioAdapter,

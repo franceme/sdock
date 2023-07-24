@@ -1090,21 +1090,3 @@ class VirtualBox:
             "required": True,
         }
     )
-
-    def xml(self):
-        #https://xsdata.readthedocs.io/en/latest/xml.html#serialize-xml-to-string
-        from xsdata.formats.dataclass.serializers import XmlSerializer
-        from xsdata.formats.dataclass.serializers.config import SerializerConfig
-
-        config = SerializerConfig(pretty_print=True)
-        serializer = XmlSerializer(config=config)
-        return serializer.render(self)
-
-    @staticmethod
-    def from_xml(filename:str):
-        #https://xsdata.readthedocs.io/en/latest/xml.html#parse-from-xml-filename
-        from xsdata.formats.dataclass.context import XmlContext
-        from xsdata.formats.dataclass.parsers import XmlParser
-
-        parser = XmlParser(context=XmlContext())
-        return parser.parse(filename, VirtualBox)

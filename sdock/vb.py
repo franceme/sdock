@@ -5,43 +5,117 @@ from typing import List
 from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
-from vbox_extra.gen import VirtualBox
+from vbox_extra.gen import VirtualBox,ExtraDataItem
 
 """
 https://xsdata.readthedocs.io/en/latest/
 """
 
-@dataclass
 class vb(VirtualBox):
-    """Class for keeping track of an item in inventory."""
-    vmname: str = "takenname"
-    username: str = None
-    ovafile: str = None
-    disablehosttime: bool = True
-    disablenetwork: bool = True
-    biosoffset: str = None
-    vmdate: str = None
-    network: bool = False
-    cpu: int = 2
-    ram: int = 4096
-    sharedfolder: str = None
-    uploadfiles: list = field(default_factory=list)
-    vboxmanage: str = "VBoxManage"
-    vb_path: str = None
-    headless: bool = True
+    def __init__(self,
+        vboxPath:str=None,
+        vboxmanage:str="VBoxManage",
+        vmname = "takenname",
+        username = None,
+        ovafile = None,
+        disablehosttime = True,
+        disablenetwork = True,
+        biosoffset = None,
+        vmdate = None,
+        network = False,
+        cpu = 2,
+        ram = 4096,
+        sharedfolder = None,
+        uploadfiles = [],
+        vb_path = None,
+        headless = True,
+    ):
+        self.vboxPath = vboxPath
+        box = None
+        if vboxPath is None:
+            box = self.from_xml(vboxPath)
+            box.vboxmanage = vboxmanage
+            box.machine.name = vmname
+            box.username = username
+            box.machine.hardware.cpu = cpu
+            box.machine.hardware.memory = ram
+            box.sharedfolder = sharedfolder
+            box.uploadfiles = uploadfiles
+            box.vb_path = vb_path
+            box.disablehosttime = disablehosttime
+            box.disablenetwork = disablenetwork
+            box.biosoffset = biosoffset
+            box.vmdate = vmdate
+            box.network = network
+            box.headless = headless
+            box.ovafile = ovafile
+        else:
+            self.vboxmanage = vboxmanage
+            self.machine.name = vmname
+            self.username = username
+            self.machine.hardware.cpu = cpu
+            self.machine.hardware.memory = ram
+            self.sharedfolder = sharedfolder
+            self.uploadfiles = uploadfiles
+            self.vb_path = vb_path
+            self.disablehosttime = disablehosttime
+            self.disablenetwork = disablenetwork
+            self.biosoffset = biosoffset
+            self.vmdate = vmdate
+            self.network = network
+            self.headless = headless
+            self.ovafile = ovafile
+
+    def xml(self):
+        #https://xsdata.readthedocs.io/en/latest/xml.html#serialize-xml-to-string
+        from xsdata.formats.dataclass.serializers import XmlSerializer
+        from xsdata.formats.dataclass.serializers.config import SerializerConfig
+
+        config = SerializerConfig(pretty_print=True)
+        serializer = XmlSerializer(config=config)
+        return serializer.render(self)
+
+    @staticmethod
+    def from_xml(filename:str):
+        #https://xsdata.readthedocs.io/en/latest/xml.html#parse-from-xml-filename
+        from xsdata.formats.dataclass.context import XmlContext
+        from xsdata.formats.dataclass.parsers import XmlParser
+
+        parser = XmlParser(context=XmlContext())
+        return parser.parse(filename, vb)
+
+    def refresh(self):
+        return vb(
+            vboxPath = self.vboxPath,
+            vboxmanage = self.vboxmanage,
+            vmname = self.machine.name,
+            username = self.username,
+            disablehosttime = self.disablehosttime,
+            disablenetwork = self.network,
+            biosoffset = self.biosoffset,
+            vmdate = self.vmdate,
+            network = self.disablenetwork,
+            cpu = self.machine.hardware.cpu,
+            ram = self.machine.hardware.memory,
+            sharedfolder = self.sharedfolder,
+            uploadfiles = self.uploadfiles,
+            vb_path = self.vb_path,
+            headless = self.headless,
+            ovafile = self.ovafile,
+        )
 
     # cmds_to_exe_with_network:list = field(default_factory=list)
     # cmds_to_exe_without_network:list = field(default_factory=list)
 
     def on(self, headless: bool = True):
-        cmd = "{0} startvm {1}".format(self.vboxmanage, self.vmname)
+        cmd = "{0} startvm {1}".format(self.vboxmanage, self.machine.name)
         if self.headless:
             cmd += " --type headless"
 
         mystring.string(cmd).exec()
 
     def vbexe(self, cmd):
-        string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.vmname)
+        string = "{0} guestcontrol {1} run ".format(self.vboxmanage, self.machine.name)
 
         if self.username:
             string += " --username {0} ".format(self.username)
@@ -51,30 +125,29 @@ class vb(VirtualBox):
 
     def snapshot_take(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} snapshot {1} take {2}".format(self.vboxmanage, self.vmname, snapshotname)).exec()
+        mystring.string("{0} snapshot {1} take {2}".format(self.vboxmanage, self.machine.name, snapshotname)).exec()
 
     def snapshot_load(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} snapshot {1} restore {2}".format(self.vboxmanage, self.vmname, snapshotname)).exec()
+        mystring.string("{0} snapshot {1} restore {2}".format(self.vboxmanage, self.machine.name, snapshotname)).exec()
 
     def snapshot_list(self):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} snapshot {1} list".format(self.vboxmanage, self.vmname)).exec()
+        mystring.string("{0} snapshot {1} list".format(self.vboxmanage, self.machine.name)).exec()
 
     def snapshot_delete(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} snapshot {1} delete {2}".format(self.vboxmanage, self.vmname, snapshotname)).exec()
+        mystring.string("{0} snapshot {1} delete {2}".format(self.vboxmanage, self.machine.name, snapshotname)).exec()
 
     def export_to_ova(self, ovaname):
         # https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
         mystring.string(
-            "{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage, self.vmname,
-                                                                                 ovaname)).exec()
+            "{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.vboxmanage, self.machine.name,ovaname)).exec()
 
     def __shared_folder(self, folder):
         mystring.string("{0}  sharedfolder add {1} --name \"{1}_SharedFolder\" --hostpath \"{2}\" --automount".format(
-            self.vboxmanage, self.vmname, folder)).exec()
+            self.vboxmanage, self.machine.name, folder)).exec()
 
     def add_snapshot_folder(self, snapshot_folder):
         if False:
@@ -87,7 +160,7 @@ class vb(VirtualBox):
             # VBoxManage showvminfo <X> --machinereadable
 
             machine_info = mystring.string(
-                "{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.vmname), lines=True
+                "{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.machine.name), lines=True
             ).exec()
             config_file = None
             for machine_info_line in machine_info:
@@ -234,26 +307,35 @@ class vb(VirtualBox):
         self.ovafile = ovafile
 
         mystring.string("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(
-            self.vboxmanage, self.ovafile, self.vmname, self.cpu, self.ram)).exec()
+            self.vboxmanage, self.ovafile, self.machine.name, self.machine.hardware.cpu, self.machine.hardware.memory)).exec()
 
     def disable(self):
         if self.disablehosttime:
             mystring.string("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(
-                self.vboxmanage, self.vmname)).exec()
+                self.vboxmanage, self.machine.name)).exec()
+
+            self = vb.refresh()
+            self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
 
         if self.biosoffset:
-            mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname,
+            mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.machine.name,
                                                                                  self.biosoffset)).exec()
+            #self:vb
+            #self = vb.refresh()
+            #self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
 
         if self.vmdate:
             ms = round((self.vmdate - datetime.now().date()).total_seconds() * 1000)
 
             mystring.string(
-                "{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.vmname, ms)).exec()
+                "{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.machine.name, ms)).exec()
 
         if self.network is None or self.disablenetwork:
             network = "null"
-        mystring.string("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.vmname, network)).exec()
+        mystring.string("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.machine.name, network)).exec()
+
+            self = vb.refresh()
+            self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
 
     def prep(self):
         if self.ovafile:
@@ -272,12 +354,12 @@ class vb(VirtualBox):
                 self.vbexe(cmd)
 
             # Disable the Network
-            mystring.string("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.vmname)).exec()
+            mystring.string("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.machine.name)).exec()
             for cmd in self.cmds_to_exe_without_network:
                 self.vbexe(cmd)
 
             # Turn on the Network
-            mystring.string("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.vmname)).exec()
+            mystring.string("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.machine.name)).exec()
             self.stop()
 
         self.disable()
@@ -290,7 +372,7 @@ class vb(VirtualBox):
         self.run(True)
 
     def off(self):
-        mystring.string("{0} controlvm {1} poweroff".format(self.vboxmanage, self.vmname)).exec()
+        mystring.string("{0} controlvm {1} poweroff".format(self.vboxmanage, self.machine.name)).exec()
 
     def __exit__(self, type, value, traceback):
         self.stop()
@@ -298,10 +380,10 @@ class vb(VirtualBox):
     def uploadfile(self, file: str):
         mystring.string(
             "{0} guestcontrol {1} copyto {2} --target-directory=c:/Users/{3}/Desktop/ --user \"{3}\"".format(
-                self.vboxmanage, self.vmname, file, self.username)).exec()
+                self.vboxmanage, self.machine.name, file, self.username)).exec()
 
     def clean(self, deletefiles: bool = True):
-        cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.vmname)
+        cmd = "{0} unregistervm {1}".format(self.vboxmanage, self.machine.name)
 
         if deletefiles:
             cmd += " --delete"
