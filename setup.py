@@ -90,7 +90,7 @@ elif selfArg('zip'):
 
 vb = [
 	"xsdata",
-	"dicttoxml" #https://pypi.org/project/dicttoxml/
+	"remotevbox"
 ]
 
 setup(
