@@ -104,9 +104,6 @@ class vb(VirtualBox):
             ovafile = self.ovafile,
         )
 
-    # cmds_to_exe_with_network:list = field(default_factory=list)
-    # cmds_to_exe_without_network:list = field(default_factory=list)
-
     def on(self, headless: bool = True):
         cmd = "{0} startvm {1}".format(self.vboxmanage, self.machine.name)
         if self.headless:
@@ -150,24 +147,13 @@ class vb(VirtualBox):
             self.vboxmanage, self.machine.name, folder)).exec()
 
     def add_snapshot_folder(self, snapshot_folder):
-        if False:
+        if False and self.vboxPath:
             import datetime, uuid
             from copy import deepcopy as dc
             from pathlib import Path
-            import sdock.vbgen as vb_struct
 
             # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-showvminfo.html
             # VBoxManage showvminfo <X> --machinereadable
-
-            machine_info = mystring.string(
-                "{0} showvminfo {1} --machinereadable".format(self.vboxmanage, self.machine.name), lines=True
-            ).exec()
-            config_file = None
-            for machine_info_line in machine_info:
-                machine_info_line = machine_info_line.strip()
-                if machine_info_line.startswith("CfgFile"):
-                    print(machine_info_line)
-                    config_file = machine_info_line.replace("CfgFile=", '').replace('"', '').strip()
 
             parser = XmlParser()
             og_config = parser.from_path(Path(config_file), vb_struct.VirtualBox)
@@ -308,34 +294,42 @@ class vb(VirtualBox):
 
         mystring.string("{0}  import {1} --vsys 0 --vmname {2} --ostype \"Windows10\" --cpus {3} --memory {4}".format(
             self.vboxmanage, self.ovafile, self.machine.name, self.machine.hardware.cpu, self.machine.hardware.memory)).exec()
-
-    def disable(self):
-        if self.disablehosttime:
+    
+    def disableHostTime(self):
+       if self.disablehosttime:
             mystring.string("{0} setextradata {1} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(
                 self.vboxmanage, self.machine.name)).exec()
 
             self = vb.refresh()
             self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
 
+    def setBiosOffset(self):
         if self.biosoffset:
             mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.machine.name,
                                                                                  self.biosoffset)).exec()
-            #self:vb
-            #self = vb.refresh()
-            #self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
-
+            if False:
+                self:vb
+                self = vb.refresh()
+                #self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
+    
+    def setVMDate(self):
         if self.vmdate:
             ms = round((self.vmdate - datetime.now().date()).total_seconds() * 1000)
 
             mystring.string(
                 "{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vboxmanage, self.machine.name, ms)).exec()
+    
+    def disableNetwork(self):
+        mystring.string("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.machine.name)).exec()
 
-        if self.network is None or self.disablenetwork:
-            network = "null"
-        mystring.string("{0} modifyvm {1} --nic1 {2}".format(self.vboxmanage, self.machine.name, network)).exec()
+    def enableNetwork(self):
+        mystring.string("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.machine.name)).exec()
 
-            self = vb.refresh()
-            self.machine.extra_data.extra_data_item += ExtraDataItem(name="VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", value="1")
+    def disable(self):
+        self.disableHostTime()
+        self.setBiosOffset()
+        self.setVMDate()
+        self.disableHostTime()
 
     def prep(self):
         if self.ovafile:
@@ -353,13 +347,13 @@ class vb(VirtualBox):
             for cmd in self.cmds_to_exe_with_network:
                 self.vbexe(cmd)
 
+            self.disableNetwork()
             # Disable the Network
-            mystring.string("{0} modifyvm {1} --nic1 null".format(self.vboxmanage, self.machine.name)).exec()
             for cmd in self.cmds_to_exe_without_network:
                 self.vbexe(cmd)
 
             # Turn on the Network
-            mystring.string("{0} modifyvm {1} --nic1 nat".format(self.vboxmanage, self.machine.name)).exec()
+            self.enableNetwork()
             self.stop()
 
         self.disable()
