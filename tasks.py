@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 import os,sys
-from invoke import task
-from sdock import vagrant as v
 import shutil
+from sdock import vagrant as v
 
 def run(string):
 	print(string);os.system(string)
 
-@task
-def gitr(c):
+def gitr():
 	for x in [
 		'git config --global user.email "EMAIL"',
 		'git config --global user.name "UserName (pythondev@lite)"'
 	]:
 		run(x)
 
-@task
-def cleanenv(c):
+def cleanenv():
 	for x in [
 		'CachedExtensions/',
 		'CachedExtensionVSIXs/',
@@ -29,16 +26,25 @@ def cleanenv(c):
 	]:
 		run("yes|rm -r " + str(x))
 
-@task
-def execute(c):
+def execute():
 	print("Executing")
 
-@task
-def vagrantOne(c):
+def vagrantOne():
 	path = "temp/"
 	if os.path.exists(path):
 		shutil.rmtree(path)
-		os.mkdir(path)
 
+	os.mkdir(path)
 	os.chdir(path)
 	v.vagrant().fullStart()
+
+def getArgs():
+	import argparse
+	parser = argparse.ArgumentParser("tasks")
+	parser.add_argument("-v","--vagrantOne", action="store_true",default=False, help="Run Vagrant")
+	return parser.parse_args()
+
+if __name__ == '__main__':
+	argz = getArgs()
+	if argz.vagrantOne:
+		vagrantOne()
