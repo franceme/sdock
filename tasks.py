@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 import os,sys
 from invoke import task
+from sdock import vagrant as v
+import shutil
 
+def run(string):
+	print(string);os.system(string)
 
 @task
 def gitr(c):
@@ -9,7 +13,7 @@ def gitr(c):
 		'git config --global user.email "EMAIL"',
 		'git config --global user.name "UserName (pythondev@lite)"'
 	]:
-		print(x);os.system(x)
+		run(x)
 
 @task
 def cleanenv(c):
@@ -23,9 +27,18 @@ def cleanenv(c):
 		'coder.json',
 		'machineid',
 	]:
-		x = "yes|rm -r " + str(x)
-		print(x);os.system(x)
+		run("yes|rm -r " + str(x))
 
 @task
 def execute(c):
 	print("Executing")
+
+@task
+def vagrantOne(c):
+	path = "temp/"
+	if os.path.exists(path):
+		shutil.rmtree(path)
+		os.mkdir(path)
+
+	os.chdir(path)
+	v.vagrant().fullStart()

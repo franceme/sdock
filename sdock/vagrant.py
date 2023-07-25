@@ -1,6 +1,6 @@
 import os, mystring
 from datetime import datetime
-import vagrant as ogvag
+#import vagrant as ogvag
 
 
 # https://github.com/pycontribs/python-vagrant/tree/main
@@ -197,6 +197,10 @@ end
             mystring.string(cmd).exec()
         else:
             print("Vagrant VM hasn't been created yet")
+
+    def fullStart(self):
+        self.prep()
+        self.on()
 
     def off(self):
         mystring.string("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name)).exec()
