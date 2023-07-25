@@ -7,126 +7,127 @@ from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 from vbox_extra.gen import VirtualBox,ExtraDataItem,Snapshot,StorageController,AttachedDevice,Image,Snapshots,HardDisk
 
-def add_snapshot(self:VirtualBox, snapshot_path:str, snapshot_folder:str):
-    """
-    VDI located in StorageControllers-attachedDevice-Image (uuid):> {06509f60-d51f-4ce4-97ed-f83cff79d93e}
-    Also located in Machine -> MediaRegistry -> HardDisks -> HardDisk
-    """
-    import uuid, datetime
-    from copy import deepcopy as dc
+if False:
+    def add_snapshot(self:VirtualBox, snapshot_path:str, snapshot_folder:str):
+        """
+        VDI located in StorageControllers-attachedDevice-Image (uuid):> {06509f60-d51f-4ce4-97ed-f83cff79d93e}
+        Also located in Machine -> MediaRegistry -> HardDisks -> HardDisk
+        """
+        import uuid, datetime
+        from copy import deepcopy as dc
 
-    copy_hardware = dc(self.machine.hardware)
+        copy_hardware = dc(self.machine.hardware)
 
-    # Fix the VMDK Potential
-    save_files, vdi_file = [], None
-    vmdk_files = []
-    for filename in os.scandir(snapshot_folder):
-        if os.path.isfile(filename.path):
-            if filename.name.endswith('.sav'):
-                save_files += [filename.path]
-            if filename.name.endswith('.vdi'):
-                vdi_file = filename.path
-            if filename.name.endswith('.vmdk'):
-                vmdk_files += [filename.path]
-        print(filename.name)
-    print(vdi_file)
-    save_files.sort(key=lambda date: datetime.datetime.strptime(
-        '-'.join(date.replace('Snapshots/', '').replace('.sav', '').split("-")[:-1]), "%Y-%m-%dT%H-%M-%S"))
+        # Fix the VMDK Potential
+        save_files, vdi_file = [], None
+        vmdk_files = []
+        for filename in os.scandir(snapshot_folder):
+            if os.path.isfile(filename.path):
+                if filename.name.endswith('.sav'):
+                    save_files += [filename.path]
+                if filename.name.endswith('.vdi'):
+                    vdi_file = filename.path
+                if filename.name.endswith('.vmdk'):
+                    vmdk_files += [filename.path]
+            print(filename.name)
+        print(vdi_file)
+        save_files.sort(key=lambda date: datetime.datetime.strptime(
+            '-'.join(date.replace('Snapshots/', '').replace('.sav', '').split("-")[:-1]), "%Y-%m-%dT%H-%M-%S"))
 
-    last_snapshot = self.machine.snapshot.uuid
+        last_snapshot = self.machine.snapshot.uuid
 
-    ini_snapshot = Snapshot(
-        uuid="{" + str(uuid.uuid4()) + "}",
-        name="SnapShot := 0",
-        # time_stamp=save_file_date,
-        # state_file=X,
-        hardware=dc(self.machine.hardware),
-    )
-    new_storage_controller = StorageController(
-        name="SATA",
-        type_value="AHCI",
-        port_count=1,
-        use_host_iocache=False,
-        bootable=True,
-        ide0_master_emulation_port=0,
-        ide0_slave_emulation_port=1,
-        ide1_master_emulation_port=2,
-        ide1_slave_emulation_port=3,
-        # attached_device=""
-    )
-    new_storage_controller.attached_device.append(AttachedDevice(
-        type_value="HardDisk",
-        hotpluggable=False,
-        port=0,
-        device=0,
-        image=Image(
-            uuid=os.path.basename(vdi_file).replace(".vdi", "")
-        )
-    ))
-
-    self.machine.snapshot = ini_snapshot
-
-    last_snapshot = ini_snapshot
-
-    for save_file in save_files:
-        save_file_date = save_file.replace('.sav', '')
-        temp_snapshot = Snapshot(
+        ini_snapshot = Snapshot(
             uuid="{" + str(uuid.uuid4()) + "}",
-            name="SnapShot := {0}".format(save_file_date),
-            time_stamp=save_file_date,
+            name="SnapShot := 0",
+            # time_stamp=save_file_date,
             # state_file=X,
-            hardware=copy_hardware,
+            hardware=dc(self.machine.hardware),
         )
-
-        if save_file == save_files[-1]:  # LAST ITERATION
-            self.machine.current_snapshot = temp_snapshot.uuid
-
-            new_storage_controller = StorageController(
-                name="SATA",
-                type_value="AHCI",
-                port_count=1,
-                use_host_iocache=False,
-                bootable=True,
-                ide0_master_emulation_port=0,
-                ide0_slave_emulation_port=1,
-                ide1_master_emulation_port=2,
-                ide1_slave_emulation_port=3,
-                # attached_device=""
+        new_storage_controller = StorageController(
+            name="SATA",
+            type_value="AHCI",
+            port_count=1,
+            use_host_iocache=False,
+            bootable=True,
+            ide0_master_emulation_port=0,
+            ide0_slave_emulation_port=1,
+            ide1_master_emulation_port=2,
+            ide1_slave_emulation_port=3,
+            # attached_device=""
+        )
+        new_storage_controller.attached_device.append(AttachedDevice(
+            type_value="HardDisk",
+            hotpluggable=False,
+            port=0,
+            device=0,
+            image=Image(
+                uuid=os.path.basename(vdi_file).replace(".vdi", "")
             )
-            new_storage_controller.attached_device.append(AttachedDevice(
-                type_value="HardDisk",
-                hotpluggable=False,
-                port=0,
-                device=0,
-                image=Image(
-                    uuid=os.path.basename(vdi_file).replace(".vdi", "")
+        ))
+
+        self.machine.snapshot = ini_snapshot
+
+        last_snapshot = ini_snapshot
+
+        for save_file in save_files:
+            save_file_date = save_file.replace('.sav', '')
+            temp_snapshot = Snapshot(
+                uuid="{" + str(uuid.uuid4()) + "}",
+                name="SnapShot := {0}".format(save_file_date),
+                time_stamp=save_file_date,
+                # state_file=X,
+                hardware=copy_hardware,
+            )
+
+            if save_file == save_files[-1]:  # LAST ITERATION
+                self.machine.current_snapshot = temp_snapshot.uuid
+
+                new_storage_controller = StorageController(
+                    name="SATA",
+                    type_value="AHCI",
+                    port_count=1,
+                    use_host_iocache=False,
+                    bootable=True,
+                    ide0_master_emulation_port=0,
+                    ide0_slave_emulation_port=1,
+                    ide1_master_emulation_port=2,
+                    ide1_slave_emulation_port=3,
+                    # attached_device=""
                 )
-            ))
+                new_storage_controller.attached_device.append(AttachedDevice(
+                    type_value="HardDisk",
+                    hotpluggable=False,
+                    port=0,
+                    device=0,
+                    image=Image(
+                        uuid=os.path.basename(vdi_file).replace(".vdi", "")
+                    )
+                ))
 
-            temp_snapshot.hardware.storage_controllers.storage_controller = new_storage_controller
-            self.machine.current_snapshot = temp_snapshot.uuid
-            last_snapshot.snapshots = Snapshots(
-                snapshot=[temp_snapshot]
-            )
+                temp_snapshot.hardware.storage_controllers.storage_controller = new_storage_controller
+                self.machine.current_snapshot = temp_snapshot.uuid
+                last_snapshot.snapshots = Snapshots(
+                    snapshot=[temp_snapshot]
+                )
 
-            last_snapshot = temp_snapshot
-        else:
-            last_snapshot.snapshots = Snapshots(
-                [temp_snapshot]
-            )
-            last_snapshot = temp_snapshot
+                last_snapshot = temp_snapshot
+            else:
+                last_snapshot.snapshots = Snapshots(
+                    [temp_snapshot]
+                )
+                last_snapshot = temp_snapshot
 
-    self.machine.media_registry.hard_disks.hard_disk.hard_disk = HardDisk(
-        uuid=os.path.basename(vdi_file).replace(".vdi", ""),
-        location=vdi_file,
-        format="vdi"
-    )
-    config = SerializerConfig(pretty_print=True)
-    serializer = XmlSerializer(config=config)
-    og_config_string = serializer.render(self)
-    return
+        self.machine.media_registry.hard_disks.hard_disk.hard_disk = HardDisk(
+            uuid=os.path.basename(vdi_file).replace(".vdi", ""),
+            location=vdi_file,
+            format="vdi"
+        )
+        config = SerializerConfig(pretty_print=True)
+        serializer = XmlSerializer(config=config)
+        og_config_string = serializer.render(self)
+        return
 
-VirtualBox.add_snapshot = add_snapshot
+    VirtualBox.add_snapshot = add_snapshot
 
 """
 https://xsdata.readthedocs.io/en/latest/

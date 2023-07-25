@@ -7,22 +7,37 @@ import vagrant as ogvag
 # https://github.com/pycontribs/python-vagrant/tree/main
 
 
-@dataclass
-class vagrant(ogvag.Vagrant):
-    vagrant_base: str = "talisker/windows10pro",
-    disablehosttime: bool = True,
-    disablenetwork: bool = True,
-    vmdate: str = None,
-    cpu: int = 2,
-    ram: int = 4096,
-    uploadfiles: list = None,
-    choco_packages: list = None,
-    python_packages: list = None,
-    scripts_to_run: str = None,
-    vb_path: str = None,
-    vb_box_exe: str = "VBoxManage"
-    headless: bool = True
-    save_files: list = None
+class vagrant(ogvag.Vagrant): #https://github.com/pycontribs/python-vagrant/blob/main/src/vagrant/__init__.py#L202
+    def __init__(self,
+        vagrant_base = "talisker/windows10pro",
+        disablehosttime = True,
+        disablenetwork = True,
+        vmdate = None,
+        cpu = 2,
+        ram = 4096,
+        uploadfiles = None,
+        choco_packages = None,
+        python_packages = None,
+        scripts_to_run = None,
+        vb_path = None,
+        vb_box_exe = "VBoxManage",
+        headless = True,
+        save_files = None,
+    ):
+        self.vagrant_base = vagrant_base #= "talisker/windows10pro",
+        self.disablehosttime = disablehosttime # = True,
+        self.disablenetwork = disablenetwork # = True,
+        self.vmdate = vmdate # = None,
+        self.cpu = cpu # = 2,
+        self.ram = ram # = 4096,
+        self.uploadfiles = uploadfiles # = None,
+        self.choco_packages = choco_packages # = None,
+        self.python_packages = python_packages # = None,
+        self.scripts_to_run = scripts_to_run # = None,
+        self.vb_path = vb_path # = None,
+        self.vb_box_exe = vb_box_exe # #= "VBoxManage"
+        self.headless = headless # = True
+        self.save_files = save_files # = None
 
     def __post_init__(self):
         if self.uploadfiles is None or type(self.uploadfiles) is tuple:
