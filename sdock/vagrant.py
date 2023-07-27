@@ -93,9 +93,9 @@ class vagrant(object): #ogvag.Vagrant #https://github.com/pycontribs/python-vagr
             contents += [
                 """Disable-NetAdapter -Name "*" -Confirm:$false """
             ]
-
-        with open("on_start.ps1", "w+") as writer:
-            writer.write("""
+        if False:
+            with open("on_start.ps1", "w+") as writer:
+                writer.write("""
 {0}
 """.format("\n".join(contents)))
         return "on_start.ps1"
@@ -108,11 +108,11 @@ class vagrant(object): #ogvag.Vagrant #https://github.com/pycontribs/python-vagr
         self.uploadfiles += [self.write_startup_file()]
         uploading_file_strings = []
 
-        for foil in self.uploadfiles:
+        for foil in []:#self.uploadfiles:
             uploading_file_strings += [self.add_file(foil)]
 
         uploading_file_strings += [
-            self.add_file(self.create_runner(),"""C:\\\\Users\\\\vagrant\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup""")
+            #self.add_file(self.create_runner(),"""C:\\\\Users\\\\vagrant\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup""")
         ]
 
         scripts = []
