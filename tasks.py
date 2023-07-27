@@ -32,12 +32,12 @@ def execute():
 	print("Executing")
 
 def vagrantPatch():
-    for x in [
-        "sudo gem install fog-libvirt",
-        "vagrant plugin install winrm ",
-        "vagrant plugin install winrm-elevated"
-    ]:
-        run(x)
+	for x in [
+		"sudo gem install fog-libvirt",
+		"vagrant plugin install winrm",
+		"vagrant plugin install winrm-elevated"
+	]:
+		run(x)
 
 def vagrantOne():
 	if os.path.exists(path):
