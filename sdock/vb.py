@@ -206,6 +206,21 @@ class vb(VirtualBox):
         parser = XmlParser(context=XmlContext())
         return parser.parse(filename, vb)
 
+    @staticmethod
+    def from_xpiz(filename:str, tempPath='/tmp/'):
+        if not filename.endswith(".py"):
+            return None
+        
+        import importlib
+        controller = importlib.import_module(filename)
+        zip_path = controller.download()
+        import zipfile
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+		    zip_ref.extractall(os.path.join(tempPath,zip_path))
+        os.remove(zip_path)
+        return os.path.join(tempPath,zip_path)
+
+
     def refresh(self):
         return vb(
             vboxPath = self.vboxPath,
