@@ -169,6 +169,7 @@ class dock:
 			exchanged = ""
 
 		no_mount = (self.mountto is None or self.mountto.strip() == '') and (self.mountfrom is None or self.mountfrom.strip() == '')
+		from util import cur_dir
 		dir = cur_dir()
 		use_dir = "$EXCHANGE_PATH" if self.shared else (self.mountfrom if self.mountfrom and self.mountfrom != ':!' else dir)
 
