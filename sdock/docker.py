@@ -10,7 +10,7 @@ class dock:
 	image: str = "frantzme/pythondev:lite"
 	ports: list = field(default_factory=list)
 	cmd: str = None
-	nonet: bool = False
+	network:str = None
 	dind: bool = False
 	shared: bool = False
 	detach: bool = False
@@ -182,8 +182,13 @@ class dock:
 			cmd = '/bin/bash'
 
 		network = ""
-		if self.nonet:
-			network = "--network none" #https://docs.docker.com/network/none/
+		if self.network:
+			if self.network.strip().lower() == "none"
+				network = "--network=\"none\"" #https://docs.docker.com/network/none/
+			elif self.network.strip().lower() == "~":
+				network = "--network=\"host\""
+			else:
+				network = "--network=\"" + self.network + "\""
 
 		my_save_host_dir = ''
 		if self.save_host_dir:
