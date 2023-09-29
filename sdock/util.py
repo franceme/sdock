@@ -61,9 +61,9 @@ def getPort(ports=[], prefix="-p",dup=True):
 		prefix = ''
 	if dup:
 		return ' '.join([
-			f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
+			f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports if port.strip() != ''
 		])
 	else: #Created a flag to support the direct usage of the port instead of linking it to the original port
 		return ' '.join([
-			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports
+			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports if port.strip() != ''
 		])
