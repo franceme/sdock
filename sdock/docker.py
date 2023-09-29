@@ -183,7 +183,7 @@ class dock:
 
 		network = ""
 		if self.network:
-			if self.network.strip().lower() == "none"
+			if self.network.strip().lower() == "none":
 				network = "--network=\"none\"" #https://docs.docker.com/network/none/
 			elif self.network.strip().lower() == "~":
 				network = "--network=\"host\""
