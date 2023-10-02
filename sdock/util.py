@@ -59,11 +59,14 @@ def getPort(ports=[], prefix="-p",dup=True):
 		ports = [ports]
 	if prefix is None:
 		prefix = ''
+
+	ports = [port for port in ports if port != None and str(port).strip() != '']
+
 	if dup:
 		return ' '.join([
-			f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports if port.strip() != ''
+			f"{prefix} {port if checkPort(port) else open_port()}:{port}" for port in ports
 		])
 	else: #Created a flag to support the direct usage of the port instead of linking it to the original port
 		return ' '.join([
-			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports if port.strip() != ''
+			f"{prefix} {port if checkPort(port) else open_port()}" for port in ports
 		])
