@@ -36,8 +36,9 @@ class dock:
 		#https://docs.docker.com/engine/install/ubuntu/
 		for string in [
 			"curl -fsSL https://get.docker.com -o get-docker.sh",
-			"sudo sh ./get-docker.sh --dry-run",
-			'echo "Done"' if save_file else "echo \"Done\" && rm get-docker.sh"
+			"sudo sh ./get-docker.sh",
+			'echo "Done"' if save_file else "echo \"Done\" && rm get-docker.sh",
+			"dockerd-rootless-setuptool.sh install"
 		]:
 			try:
 				mystring.string(string).exec()
