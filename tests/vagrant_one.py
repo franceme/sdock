@@ -3,7 +3,12 @@
 import os,sys
 sys.path.insert(0, '../')
 
-from sdock import vagrant as v
+from sdock.vagrant import vagrant as v
 
-box = v()
+if os.path.exists("Vagrantfile"):
+    os.remove("Vagrantfile")
+
+box = v(
+    headless = False
+)
 box.prep()
