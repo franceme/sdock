@@ -37,6 +37,11 @@ class vagrant(object): #ogvag.Vagrant #https://github.com/pycontribs/python-vagr
         self.vb_box_exe = vb_box_exe # #= "VBoxManage"
         self.headless = headless # = True
         self.save_files = save_files # = None
+        self.history = []
+
+    def ex(self, cmd):
+        self.history += [cmd]
+        mystring.string.of(cmd).exec()
 
     @property
     def vagrant_name(self):
@@ -55,24 +60,24 @@ class vagrant(object): #ogvag.Vagrant #https://github.com/pycontribs/python-vagr
 
     def snapshot_take(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} take {1}".format(self.__snapshot_prep(), snapshotname)).exec()
+        self.ex("{0} take {1}".format(self.__snapshot_prep(), snapshotname))
 
     def snapshot_load(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} restore {1}".format(self.__snapshot_prep(), snapshotname)).exec()
+        self.ex("{0} restore {1}".format(self.__snapshot_prep(), snapshotname))
 
     def snapshot_list(self):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} list".format(self.__snapshot_prep())).exec()
+        self.ex("{0} list".format(self.__snapshot_prep()))
 
     def snapshot_delete(self, snapshotname):
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-snapshot.html
-        mystring.string("{0} delete {1}".format(self.__snapshot_prep(), snapshotname)).exec()
+        self.ex("{0} delete {1}".format(self.__snapshot_prep(), snapshotname))
 
     def export_to_ova(self, ovaname):
         # https://www.techrepublic.com/article/how-to-import-and-export-virtualbox-appliances-from-the-command-line/
         # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
-        mystring.string("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.__snapshot_prep(),ovaname)).exec()
+        self.ex("{0} export {1} --ovf10 --options manifest,iso,nomacs -o {2}".format(self.__snapshot_prep(),ovaname))
 
     def create_runner(self):
         # https://jd-bots.com/2021/05/15/how-to-run-powershell-script-on-windows-startup/
@@ -181,20 +186,20 @@ end
             vagrantfile.write(contents)
 
     def on(self):
-        mystring.string(""" vagrant up""").exec()
+        self.ex(""" vagrant up""")
 
     def resume(self):
         if self.vagrant_name.strip() is not None and self.vagrant_name.strip() != '':
             if self.vmdate:
                 diff_days = (self.vmdate - datetime.now().date())
                 ms = round(diff_days.total_seconds() * 1000)
-                mystring.string("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vb_box_exe, self.vagrant_name, ms)).exec()
+                self.ex("{0} modifyvm {1} --biossystemtimeoffset {2}".format(self.vb_box_exe, self.vagrant_name, ms))
 
             cmd = "{0} startvm {1}".format(self.vb_box_exe, self.vagrant_name)
             if self.headless:
                 cmd += " --type headless"
 
-            mystring.string(cmd).exec()
+            self.ex(cmd)
         else:
             print("Vagrant VM hasn't been created yet")
 
@@ -203,16 +208,16 @@ end
         self.on()
 
     def off(self):
-        mystring.string("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name)).exec()
+        self.ex("{0} controlvm {1} poweroff".format(self.vb_box_exe, self.vagrant_name))
 
     def destroy(self):
-        mystring.string(""" vagrant destroy -f """).exec()
+        self.ex(""" vagrant destroy -f """)
         for foil in ["Vagrant", "on_start*", "on_login*"]:
-            mystring.string("rm {0}".format(foil)).exec()
-        mystring.string("yes|rm -r .vagrant/").exec()
+            self.ex("rm {0}".format(foil))
+        self.ex("yes|rm -r .vagrant/")
         for foil in list(self.uploadfiles):
             if foil not in self.save_files:
-                mystring.string("rm {0}".format(foil)).exec()
+                self.ex("rm {0}".format(foil))
 
     def clean(self, emptyflag=False):
         self.destroy(emptyflag)
