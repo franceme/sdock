@@ -24,12 +24,15 @@ class mooring(object):
     @property
     def on(self):
         if not self.is_on():
-            self.container
-            self.container.start()
+            try:
+                self.container
+                self.container.start()
+            except Exception as e:
+                print(e)
 
-            self._on = True
-            self._off = False
-            self._remove = False
+            self._on = self.status != "NotCreated"
+            self._off = self.status == "NotCreated"
+            self._remove = self.status == "NotCreated"
 
         return self._on
 
