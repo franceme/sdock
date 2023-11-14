@@ -1,6 +1,6 @@
 import os, mystring
 from dataclasses import dataclass, field
-from sdock.util import cur_dir, getPort
+from sdock.util import cur_dir, getPort, open_port, checkPort
 
 
 @dataclass
@@ -228,4 +228,29 @@ class dock:
 	def compose(self, output_file:str=""):
 		#https://docs.docker.com/compose/gettingstarted/
 		return
+	
+	def __call__(self, commands:list, user_id=0):
+		#https://docker-py.readthedocs.io/en/stable/containers.html
+		import docker
+		client = docker.from_env()
+
+		docker_output = client.containers.run(
+			image = self.image,
+			command = commands,
+			ports = {"{0}/tcp".format(port):port if checkPort(port) else open_port() for port in self.ports}, #Need to fix this
+			network=self.network,
+			detach=self.detach,
+			privileged=self.dind,
+			sudo=self.dind,
+			user=user_id,
+			remove=self.remove,
+			working_dir=self.mountto,
+			mac_address=self.macaddress,
+			name=self.name,
+			volumes={self.mountfrom:{
+				"bind":self.mountto,
+				"mode":"rw"
+			}}
+		)
+		return docker_output
 
