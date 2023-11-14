@@ -67,7 +67,7 @@ class mooring(object):
 
     @property
     def status(self):
-        return "NotCreated" if self.is_removed() or self._container is None else self._container.status()
+        return "NotCreated" if self._container is None else self._container.status
 
     @property
     def container(self):
