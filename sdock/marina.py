@@ -102,7 +102,7 @@ class mooring(object):
 
     def storage(self):
         self.on
-        return self.container_storage(
+        return container_storage(
             container=self.container,
             working_dir=self.working_dir
         )
