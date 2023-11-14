@@ -19,22 +19,26 @@ class mooring(object):
         self._container = None
         self._on = False
         self._off = True
-        self._remove = False
+        self._remove = True
 
     @property
     def on(self):
-        if not self._on:
+        if not self.is_on():
             self.container
             self.container.start()
 
+            self._on = True
             self._off = False
             self._remove = False
 
         return self._on
 
+    def is_on(self):
+        return self._on
+
     @property
     def off(self):
-        if not self._off:
+        if not self.is_off():
             self.container.stop()
 
             self._on = False
@@ -42,15 +46,25 @@ class mooring(object):
 
         return self._off
 
+    def is_off(self):
+        return self._off
+
     @property
     def remove(self):
-        if not self._remove:
+        if not self.is_removed():
             self.off
             self.container.remove()
 
             self._remove = True
 
         return self._remove
+
+    def is_removed(self):
+        return self._remove
+
+    @property
+    def status(self):
+        return "NotCreated" if self.is_removed() or self._container is None else self._container.status()
 
     @property
     def container(self):
@@ -70,7 +84,6 @@ class mooring(object):
                 detach=self.detach,
                 privileged=self.sudo,
                 #user=user_id,
-                remove=self.remove_container,
                 working_dir=self.working_dir,
                 name=self.name,
                 volumes=temp_containers
