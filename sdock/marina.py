@@ -121,10 +121,11 @@ class mooring(object):
                     try:
                         exit_code = int(log.strip())
                     except:pass
-                try:
-                    logs += [log.decode("utf-8")]
-                except Exception as k:
-                    print("Error decoding output line {0}".format(str(log)))
+                else:
+                    try:
+                        logs += [log.decode("utf-8")]
+                    except Exception as k:
+                        print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
 
         except Exception as e:
             print(e)
