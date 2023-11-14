@@ -126,7 +126,7 @@ class mooring(object):
                     try:
                         log_line = str(log.decode("utf-8")).strip()
                         for subline in log_line.split("\n"):
-                            output_logs += [str(subline.split(" ")[-1]).strip()]
+                            output_logs += [str(subline).strip()]
                     except Exception as k:
                         print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
 
