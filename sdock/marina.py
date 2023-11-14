@@ -119,15 +119,13 @@ class mooring(object):
             for log_itr,log in enumerate(logs):
                 if log_itr == 0:
                     try:
-                        exit_code = int(log.strip())
+                        exit_code = int(log.decode("utf-8").strip())
                     except:pass
                 else:
                     try:
                         log_line = str(log.decode("utf-8")).strip()
                         for subline in log_line.split("\n"):
-                            subline = str(subline.split(" ")[-1]).strip()
-                            if subline not in ["../","..","./",".",""]:
-                                files += [subline]
+                            logs += [str(subline.split(" ")[-1]).strip()]
                     except Exception as k:
                         print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
 
