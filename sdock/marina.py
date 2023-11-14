@@ -56,7 +56,11 @@ class mooring(object):
     def remove(self):
         if not self.is_removed():
             self.off
-            self.container.remove()
+            try:
+                self.container.kill()
+                self.container.remove(v=True, force=True)
+            except Exception as e:
+                print(e)
 
             self._remove = True
 
