@@ -1,5 +1,6 @@
-import os,sys,mystring as mys,docker,hugg.dock as container_storage
+import os,sys,mystring as mys,docker
 from sdock.util import open_port, checkPort
+from hugg import dock as container_storage
 
 class mooring(object):
     def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}):
