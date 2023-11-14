@@ -110,7 +110,7 @@ class mooring(object):
     def __call__(self, string):
         exit_code=None;logs = []
         try:
-            logs = container.exec_run(
+            logs = self.container.exec_run(
                 cmd = string,
                 privileged=self.sudo,
                 workdir=self.working_dir,
