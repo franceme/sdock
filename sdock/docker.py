@@ -241,7 +241,7 @@ class dock:
 			network=self.network,
 			detach=self.detach,
 			privileged=self.dind,
-			sudo=self.dind,
+			#sudo=self.dind,
 			user=user_id,
 			remove=self.remove,
 			working_dir=self.mountto,
