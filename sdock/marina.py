@@ -123,7 +123,11 @@ class mooring(object):
                     except:pass
                 else:
                     try:
-                        logs += [log.decode("utf-8")]
+                        log_line = str(log.decode("utf-8")).strip()
+                        for subline in log_line.split("\n"):
+                            subline = str(subline.split(" ")[-1]).strip()
+                            if subline not in ["../","..","./",".",""]:
+                                files += [subline]
                     except Exception as k:
                         print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
 
