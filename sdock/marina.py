@@ -119,8 +119,9 @@ class mooring(object):
             for log_itr,log in enumerate(logs):
                 if log_itr == 0:
                     try:
-                        exit_code = int(log.decode("utf-8").strip())
-                    except:pass
+                        exit_code = int(str(log))
+                    except Exception as e:
+                        print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
                 else:
                     try:
                         log_line = str(log.decode("utf-8")).strip()
