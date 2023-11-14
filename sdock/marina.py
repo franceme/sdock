@@ -108,7 +108,7 @@ class mooring(object):
         )
 
     def __call__(self, string):
-        exit_code=None;logs = []
+        exit_code=None;output_logs = []
         try:
             logs = self.container.exec_run(
                 cmd = string,
@@ -126,13 +126,13 @@ class mooring(object):
                     try:
                         log_line = str(log.decode("utf-8")).strip()
                         for subline in log_line.split("\n"):
-                            logs += [str(subline.split(" ")[-1]).strip()]
+                            output_logs += [str(subline.split(" ")[-1]).strip()]
                     except Exception as k:
                         print("Error decoding {1} @ line {0}".format(str(log_itr), str(log)))
 
         except Exception as e:
             print(e)
-        return exit_code, logs
+        return exit_code, output_logs
 
     def __exit__(self, a,b,c):
         self.off
