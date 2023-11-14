@@ -1,4 +1,4 @@
-import os,sys,mystring as mys,docker,hugg.dock as container_storage
+import os,sys,mystring as mys,docker,hugg.sdock as container_storage
 from sdock.util import open_port, checkPort
 
 class mooring(object):
@@ -62,18 +62,18 @@ class mooring(object):
                 }
 
             self._container = self.client.containers.create(
-			image = self.image,
-			command = "sleep 100000", #Seems to be necessary to keep the container alive while working with it?
-			ports = {"{0}/tcp".format(port):port if checkPort(port) else open_port() for port in self.ports}, #Need to fix this
-			network=self.network,
-			detach=self.detach,
-			privileged=self.sudo,
-			#user=user_id,
-			remove=self.remove_container,
-			working_dir=self.working_dir,
-			name=self.name,
-			volumes=temp_containers
-		)
+                image = self.image,
+                command = "sleep 100000", #Seems to be necessary to keep the container alive while working with it?
+                ports = {"{0}/tcp".format(port):port if checkPort(port) else open_port() for port in self.ports}, #Need to fix this
+                network=self.network,
+                detach=self.detach,
+                privileged=self.sudo,
+                #user=user_id,
+                remove=self.remove_container,
+                working_dir=self.working_dir,
+                name=self.name,
+                volumes=temp_containers
+            )
         return self._container
 
     def __enter__(self):
@@ -90,7 +90,7 @@ class mooring(object):
             working_dir=self.working_dir
         )
 
-    def __call__(self, string)
+    def __call__(self, string):
         exit_code=None;logs = []
         try:
             logs = container.exec_run(
