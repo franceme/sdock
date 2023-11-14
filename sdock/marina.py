@@ -1,4 +1,4 @@
-import os,sys,mystring as mys,docker,hugg.sdock as container_storage
+import os,sys,mystring as mys,docker,hugg.dock as container_storage
 from sdock.util import open_port, checkPort
 
 class mooring(object):
