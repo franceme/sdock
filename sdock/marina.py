@@ -10,9 +10,16 @@ class titan(object):
         return self.container.__enter__()
 
     def __exit__(self):
-        container_name = self.container.name
-        self.container.__exit__()
-        kill_container(container_name)
+        try:
+            print(1)
+            container_name = self.container.name
+            print(2)
+            self.container.__exit__()
+            print(3)
+            kill_container(container_name)
+            print(4)
+        except Exception as e:
+            print(e)
 
 def kill_container(name):
     try:os.system("docker rm -f -v {0}".format(self._name))
