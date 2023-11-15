@@ -2,26 +2,18 @@ import os,sys,mystring as mys,docker
 from sdock.util import open_port, checkPort
 from hugg import dock as container_storage
 
-class sink(object):
-    def __init__(self, container:mooring):
-        self.container = container
-
-    def __enter__(self):
-        return self.container.__enter__()
-
-    def __exit__(self,a,b,c):
-        container_name = self.container.name
-        self.container.__exit__()
-
-        try:self.container.kill()
-        except Exception as e:print("1:Killing")
-        
-        try:self.container.remove()
-        except Exception as e:print("2:Killing")
-  
-        try:os.system("docker rm {0}".format(self.name))
-        except Exception as e:print("3:Killing")
-
+def kill_container(name):
+    try:os.system("docker rm -f -v {0}".format(self._name))
+    except Exception as e:print("1:Killing")
+    
+    try:os.system("docker rm -v {0}".format(self._name))
+    except Exception as e:print("2:Killing")
+    
+    try:os.system("docker rm -f {0}".format(self._name))
+    except Exception as e:print("3:Killing")
+    
+    try:os.system("docker rm {0}".format(self._name))
+    except Exception as e:print("4:Killing")
 
 class mooring(object):
     def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}):
@@ -86,6 +78,9 @@ class mooring(object):
             except Exception as e:print("1:Killing")
             
             try:self.container.remove()
+            except Exception as e:print("2:Killing")
+            
+            try:os.system("docker rm {0}".format(self._name))
             except Exception as e:print("2:Killing")
 
             self._remove = True
