@@ -66,12 +66,9 @@ class mooring(object):
             
             try:self.container.remove()
             except Exception as e:print("2:Killing")
-
-            try:self.container.remove(v=True)
-            except Exception as e:print("3:Killing")
-
-            try:self.container.remove(force=True)
-            except Exception as e:print("4:Killing")
+            
+            try:os.system("docker rm {0}".format(self.name))
+            except Exception as e:print("2:Killing")
 
             self._remove = True
 
@@ -106,6 +103,8 @@ class mooring(object):
                 name=self.name,
                 volumes=temp_containers
             )
+
+            self.name = self._container.name
         return self._container
 
     def __enter__(self):
