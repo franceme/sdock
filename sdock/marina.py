@@ -28,6 +28,7 @@ class mooring(object):
                 self.container
                 self.container.start()
             except Exception as e:
+                print("Starting")
                 print(e)
 
             self._on = self.status != "NotCreated"
@@ -42,7 +43,11 @@ class mooring(object):
     @property
     def off(self):
         if not self.is_off():
-            self.container.stop()
+            try:
+                self.container.stop()
+            except Exception as e:
+                print("Stopping")
+                print(e)
 
             self._on = False
             self._off = True
@@ -60,6 +65,7 @@ class mooring(object):
                 self.container.kill()
                 self.container.remove(v=True, force=True)
             except Exception as e:
+                print("Killing")
                 print(e)
 
             self._remove = True
