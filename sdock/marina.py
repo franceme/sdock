@@ -9,7 +9,7 @@ class titan(object):
     def __enter__(self):
         return self.container.__enter__()
 
-    def __exit__(self):
+    def __exit__(self,a=None,b=None,c=None):
         try:
             print(1)
             container_name = self.container.name
@@ -180,7 +180,7 @@ class mooring(object):
             print(e)
         return exit_code, output_logs
 
-    def __exit__(self, a,b,c):
+    def __exit__(self,a=None,b=None,c=None):
         self.off
         if self.remove_container:
             self.remove
