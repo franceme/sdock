@@ -2,6 +2,18 @@ import os,sys,mystring as mys,docker
 from sdock.util import open_port, checkPort
 from hugg import dock as container_storage
 
+class titan(object):
+    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}):
+        self.container = mooring(image, working_dir, ports, network,detach,sudo,remove_container,name,mount_from_to)
+
+    def __enter__(self):
+        return self.container.__enter__()
+
+    def __exit__(self):
+        container_name = self.container.name
+        self.container.__exit__()
+        kill_container(container_name)
+
 def kill_container(name):
     try:os.system("docker rm -f -v {0}".format(self._name))
     except Exception as e:pass #print("1:Killing")
