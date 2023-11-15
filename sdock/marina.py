@@ -87,13 +87,13 @@ class mooring(object):
         if not self.is_removed():
             self.off
             try:self.container.kill()
-            except Exception as e:print("1:Killing")
+            except Exception as e:pass #print("1:Killing")
             
             try:self.container.remove()
-            except Exception as e:print("2:Killing")
+            except Exception as e:pass #print("2:Killing")
             
             try:os.system("docker rm {0}".format(self._name))
-            except Exception as e:print("2:Killing")
+            except Exception as e:pass #print("2:Killing")
 
             self._remove = True
 
