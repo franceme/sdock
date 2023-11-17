@@ -3,16 +3,20 @@ from sdock.util import open_port, checkPort
 from hugg import dock as container_storage
 
 class titan(object):
-    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}, to_be_local_files=[], python_package_imports=[], environment_variables={}):
+    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}, to_be_local_files=[], python_package_imports=[], environment_variables={}, raw_cmds=[]):
         self.container = mooring(image, working_dir, ports, network,detach,sudo,remove_container,name,mount_from_to)
 
         #Prep Stuff
         self.python_package_imports = ["pip"] + python_package_imports
         self.to_be_local_files = to_be_local_files
         self.environment_variables = environment_variables
+        self.raw_cmds = raw_cmds
 
     def __enter__(self):
         wake = self.container.__enter__()
+
+        for raw_cmd in self.raw_cmds:
+            wake(raw_cmd)
 
         for to_be_local_file in self.to_be_local_files:
             localized_to_be_local_file = os.path.join(self.container.working_dir, to_be_local_file)
