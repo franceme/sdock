@@ -205,3 +205,18 @@ class mooring(object):
             self.remove
 
         return
+
+    def files(self):
+        if self.storage is not None:
+            return self.storage.files()
+        return []
+
+    def upload(self,file_path=None,path_in_repo=None):
+        if self.storage is not None:
+            return self.storage.upload(file_path=file_path,path_in_repo=path_in_repo)
+        return None
+
+    def download(self, file_path=None, download_to=None):
+        if self.storage is not None:
+            return self.storage.download(file_path=file_path,download_to=download_to)
+        return None
