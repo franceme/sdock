@@ -23,8 +23,7 @@ class titan(object):
             wake("mkdir -p {0}".format(os.path.dirname(to_be_local_file)))
             wake.storage.upload(to_be_local_file, localized_to_be_local_file)
 
-        for package in self.python_package_imports:
-            wake("python3 -m pip install --upgrade {0}".format(package))
+        wake("python3 -m pip install --upgrade {0}".format(" ".join(self.python_package_imports)))
 
         for env_var_key, env_var_value in self.environment_variables.items():
             wake("""echo export {0}={1}" >> ~/.bashrc""".format(env_var_key, env_var_value))
