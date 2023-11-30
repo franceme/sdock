@@ -2,6 +2,15 @@ import os,sys,mystring as mys,docker
 from sdock.util import open_port, checkPort
 from hugg import dock as container_storage
 
+def flatten_list(obj: object) -> list:
+    running = []
+    for item in obj:
+        if isinstance(item, list):
+            running.extend(flatten_list(item))
+        else:
+            running += [item]
+    return running
+
 class titan(object):
     def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}, to_be_local_files=[], python_package_imports=[], environment_variables={}, raw_cmds=[]):
         self.container = mooring(image, working_dir, ports, network,detach,sudo,remove_container,name,mount_from_to)
@@ -15,15 +24,15 @@ class titan(object):
     def __enter__(self):
         wake = self.container.__enter__()
 
-        for raw_cmd in self.raw_cmds:
+        for raw_cmd in flatten_list(self.raw_cmds):
             wake(raw_cmd)
 
-        for to_be_local_file in self.to_be_local_files:
+        for to_be_local_file in flatten_list(self.to_be_local_files):
             localized_to_be_local_file = os.path.join(self.container.working_dir, to_be_local_file)
             wake("mkdir -p {0}".format(os.path.dirname(to_be_local_file)))
             wake.storage.upload(to_be_local_file, localized_to_be_local_file)
 
-        wake("python3 -m pip install --upgrade {0}".format(" ".join(self.python_package_imports)))
+        wake("python3 -m pip install --upgrade {0}".format(" ".join(flatten_list(self.python_package_imports))))
 
         for env_var_key, env_var_value in self.environment_variables.items():
             wake("""echo export {0}={1}" >> ~/.bashrc""".format(env_var_key, env_var_value))
