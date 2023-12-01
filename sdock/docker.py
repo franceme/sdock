@@ -73,6 +73,7 @@ class dock:
 
 	def clean(self):
 		return "; ".join([
+			"{0} stop $({0} ps -a -q)".format(self.docker),
 			"{0} kill $({0} ps -a -q)".format(self.docker),
 			"{0} kill $({0} ps -q)".format(self.docker),
 			"{0} rm $({0} ps -a -q)".format(self.docker),
