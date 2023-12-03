@@ -228,3 +228,32 @@ class mooring(object):
         if self.storage is not None:
             return self.storage.download(file_path=file_path,download_to=download_to)
         return None
+
+    def download_working_dir(self, download_to=None):
+        download_dir_to = download_to;ext = ".tar"
+        if download_dir_to is None or not download_dir_to.endswith(ext):
+            import uuid
+            download_dir_to = str(uuid.uuid4())+ext
+
+            while os.path.exists(download_dir_to) or download_dir_to in self("ls /tmp")[-1]:
+                download_dir_to = str(uuid.uuid4())+ext
+
+        tmp_download_dir_to = "/tmp/{0}".format(os.path.basename(download_dir_to))
+        self("tar cvf {0} {1}".format(tmp_download_dir_to,self.working_dir))
+
+        created_temp_storage = False
+        if self.working_dir != "/tmp":
+            downloading_storage = container_storage(
+                container=self.container,
+                working_dir="/tmp"
+            ).__enter__()
+            created_temp_storage = True
+        else:
+            downloading_storage = self.storage
+
+        downloading_storage.download(tmp_download_dir_to, download_to)
+
+        if created_temp_storage:
+            downloading_storage.__exit__()
+
+        return download_to
