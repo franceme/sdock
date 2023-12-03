@@ -62,7 +62,7 @@ def kill_container(name):
     except Exception as e:pass #print("4:Killing")
 
 class mooring(object):
-    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}):
+    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={},auto_pull=True):
         self.client = docker.from_env()
 
         self.image = image
@@ -81,6 +81,8 @@ class mooring(object):
         self._remove = True
 
         self.storage = None
+
+        self.auto_pull = auto_pull
 
     @property
     def on(self):
@@ -145,6 +147,9 @@ class mooring(object):
     @property
     def container(self):
         if self._container is None:
+            if self.auto_pull:
+                self.client.images.pull(self.image)
+
             temp_containers = {}
             for mount_from, mount_to_in_container in self.mount_from_to.items():
                 temp_containers[mount_from]={
