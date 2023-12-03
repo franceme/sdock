@@ -212,7 +212,7 @@ class mooring(object):
         return exit_code, output_logs
 
     def __exit__(self,a=None,b=None,c=None):
-        self.storage.__exit__()
+        self.storage.__exit__(None, None, None)
         self.off
         if self.remove_container:
             self.remove
@@ -244,7 +244,7 @@ class mooring(object):
                 download_dir_to = str(uuid.uuid4())+ext
 
         tmp_download_dir_to = "/tmp/{0}".format(os.path.basename(download_dir_to))
-        self("tar cvf {0} {1}".format(tmp_download_dir_to,self.working_dir))
+        tar_exitcode, tar_logs = self("tar cvf {0} {1}".format(tmp_download_dir_to,self.working_dir))
 
         created_temp_storage = False
         if self.working_dir != "/tmp":
@@ -259,6 +259,6 @@ class mooring(object):
         downloading_storage.download(tmp_download_dir_to, download_to)
 
         if created_temp_storage:
-            downloading_storage.__exit__()
+            downloading_storage.__exit__(None, None, None)
 
         return download_to
