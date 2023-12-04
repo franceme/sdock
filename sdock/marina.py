@@ -47,6 +47,11 @@ class titan(object):
 
         try:kill_container(container_name)
         except Exception as e:pass
+    
+    def execute(self, command:str):
+        boat = self.__enter__()
+        boat(command)
+        self.__exit__()
 
 def kill_container(name):
     sys = lambda x:subprocess.check_call(x.split(),stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
