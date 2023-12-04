@@ -240,25 +240,25 @@ class mooring(object):
             import uuid
             download_dir_to = str(uuid.uuid4())+ext
 
-            while os.path.exists(download_dir_to) or download_dir_to in self("ls /tmp")[-1]:
+            while os.path.exists(download_dir_to):
                 download_dir_to = str(uuid.uuid4())+ext
 
-        tmp_download_dir_to = "/tmp/{0}".format(os.path.basename(download_dir_to))
-        tar_exitcode, tar_logs = self("tar cvf {0} {1}".format(tmp_download_dir_to,self.working_dir))
+        base_download = os.path.basename(download_dir_to)
+        current_files = str(self("ls /home/")[-1])
 
-        created_temp_storage = False
-        if self.working_dir != "/tmp":
-            downloading_storage = container_storage(
-                container=self.container,
-                working_dir="/tmp"
-            ).__enter__()
-            created_temp_storage = True
-        else:
-            downloading_storage = self.storage
+        temp_folder=base_temp_folder = "/home/__downloading__";ktr = 0
+        while self.working_dir == temp_folder or temp_folder in current_files:
+            temp_folder = base_temp_folder + str(ktr)
+            ktr += 1
 
-        downloading_storage.download(tmp_download_dir_to, download_to)
+        self("mkdir -p {0}".format(temp_folder))
 
-        if created_temp_storage:
-            downloading_storage.__exit__(None, None, None)
+        tar_exitcode, tar_logs = self("tar cvf {0}/{1} {2}".format(temp_folder, base_download,self.working_dir))
+
+        with container_storage(
+            container=self.container,
+            working_dir=temp_folder
+        ) as downloading_storage:
+            downloading_storage.download(base_download, download_to)
 
         return download_to
