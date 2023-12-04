@@ -48,9 +48,11 @@ class titan(object):
         try:kill_container(container_name)
         except Exception as e:pass
     
-    def execute(self, command:str):
+    def execute(self, *commands):
         boat = self.__enter__()
-        boat(command)
+        for cmd in commands:
+            if cmd is not None and cmd.strip() != '':
+                boat(cmd)
         self.__exit__()
 
 def kill_container(name):
