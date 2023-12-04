@@ -1,4 +1,4 @@
-import os,sys,mystring as mys,docker
+import os,sys,mystring as mys,docker,subprocess
 from sdock.util import open_port, checkPort
 from hugg import dock as container_storage
 
@@ -12,8 +12,8 @@ def flatten_list(obj: object) -> list:
     return running
 
 class titan(object):
-    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}, to_be_local_files=[], python_package_imports=[], environment_variables={}, raw_cmds=[]):
-        self.container = mooring(image, working_dir, ports, network,detach,sudo,remove_container,name,mount_from_to)
+    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={}, to_be_local_files=[], python_package_imports=[], environment_variables={}, raw_cmds=[], auto_pull=True,download_working_dir_file=False):
+        self.container = mooring(image, working_dir, ports, network,detach,sudo,remove_container,name,mount_from_to,auto_pull, download_working_dir_file)
 
         #Prep Stuff
         self.python_package_imports = ["pip"] + python_package_imports
@@ -49,20 +49,22 @@ class titan(object):
         except Exception as e:pass
 
 def kill_container(name):
-    try:os.system("docker rm -f -v {0}".format(name))
+    sys = lambda x:subprocess.check_call(x.split(),stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    try:sys("docker rm -f -v {0}".format(name))
     except Exception as e:pass #print("1:Killing")
     
-    try:os.system("docker rm -v {0}".format(name))
+    try:sys("docker rm -v {0}".format(name))
     except Exception as e:pass #print("2:Killing")
     
-    try:os.system("docker rm -f {0}".format(name))
+    try:sys("docker rm -f {0}".format(name))
     except Exception as e:pass #print("3:Killing")
     
-    try:os.system("docker rm {0}".format(name))
+    try:sys("docker rm {0}".format(name))
     except Exception as e:pass #print("4:Killing")
 
 class mooring(object):
-    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={},auto_pull=True):
+    def __init__(self, image:str, working_dir:str, ports=[], network=None,detach=False,sudo=True,remove_container=True,name=None,mount_from_to={},auto_pull=True,download_working_dir_file=False):
         self.client = docker.from_env()
 
         self.image = image
@@ -83,6 +85,7 @@ class mooring(object):
         self.storage = None
 
         self.auto_pull = auto_pull
+        self.download_working_dir_file = download_working_dir_file
 
     @property
     def on(self):
@@ -212,6 +215,9 @@ class mooring(object):
         return exit_code, output_logs
 
     def __exit__(self,a=None,b=None,c=None):
+        if self.download_working_dir_file:
+            self.download_working_dir(self.name+"_env.tar")
+
         self.storage.__exit__(None, None, None)
         self.off
         if self.remove_container:
