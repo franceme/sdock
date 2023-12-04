@@ -244,10 +244,10 @@ class mooring(object):
         download_dir_to = download_to;ext = ".tar"
         if download_dir_to is None or not download_dir_to.endswith(ext):
             import uuid
-            download_dir_to = str(uuid.uuid4())+ext
+            download_dir_to = download_to.replace(".tar","")+"_"+str(uuid.uuid4())+ext
 
             while os.path.exists(download_dir_to):
-                download_dir_to = str(uuid.uuid4())+ext
+                download_dir_to = download_to.replace(".tar","")+"_"+str(uuid.uuid4())+ext
 
         base_download = os.path.basename(download_dir_to)
         current_files = str(self("ls /home/")[-1])
