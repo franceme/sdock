@@ -1,17 +1,18 @@
 import datetime
-import os,sys,Provider
+import os,sys,Provider,mystring
 
 
 class app(Provider):
-	def __init__(self, set_to_datetime_value:datetime.datetime=None, set_disable_timesync:bool=False, set_disable_network:bool=False):
+	def __init__(self):
 		super().__init__()
 		self.name = None
-		self.set_to_datetime_value=set_to_datetime_value
-		self.set_disable_timesync=set_disable_timesync
-		self.set_disable_network=set_disable_network
 
-	def __cmd(self, cmd:str):
-		os.system("VBoxManage {0}".format(cmd))
+	@property
+	def raw_name(self):
+		return "virtualbox"
+
+	def exe_name(self):
+		return "VBoxManage"
 
 	def install(self):
 		return
@@ -27,43 +28,29 @@ win10.vm.provider :virtualbox do |vb|
 end
 """.format(self.name)
 
-	def prep(self):
-		with self.inverse():
-			if self.set_to_datetime_value is not None:
-				self.set_date(self.set_to_datetime_value)
-
-			if self.set_disable_timesync:
-				self.disable_timesync()
-
-			if self.set_disable_network:
-				self.disable_network()
-
-
 	def on(self):
-		self.__cmd("startvm {0}".format(self.name))
+		self.exe("startvm {0}".format(self.name))
 
 	def off(self):
-		#self.__cmd("controlvm {0} acpipowerbutton".format(self.name))
-		self.__cmd("controlvm {0} poweroff".format(self.name))
+		#self.exe("controlvm {0} acpipowerbutton".format(self.name))
+		self.exe("controlvm {0} poweroff".format(self.name))
 
 	def delete(self):
-		self.__cmd("unregistervm --delete {0}".format(self.name))
+		self.exe("unregistervm --delete {0}".format(self.name))
 
 	def disable_timesync(self):
-		self.__cmd("setextradata {0} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.name))
+		self.exe("setextradata {0} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.name))
 
 	def set_date(self, datetime_value:datetime.datetime=None):
-		datetime_value = datetime_value or self.set_to_datetime_value
-		self.__cmd("modifyvm {0} --biossystemtimeoffset {1}".format(self.name, 
+		self.exe("modifyvm {0} --biossystemtimeoffset {1}".format(self.name, 
 			str((datetime_value - datetime.datetime.now()).total_seconds())
 		))
 
 	def disable_network(self):
-		self.__cmd("modifyvm {0} --nic1 null".format(self.name))
-		self.__cmd("modifyvm {0} --cableconnected1 off".format(self.name))
+		self.exe("modifyvm {0} --nic1 null".format(self.name))
+		self.exe("modifyvm {0} --cableconnected1 off".format(self.name))
 
-def main(args):
-	start = None
+
 	"""
 name=tempbox
 vag=sudo vagrant

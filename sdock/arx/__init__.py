@@ -20,6 +20,14 @@ class Provider(ABC):
 		pass
 
 	@abstractmethod
+	def set_name(self, string):
+		pass
+
+	@abstractmethod
+	def set_date(self, string):
+		pass
+
+	@abstractmethod
 	def disable_network(self):
 		pass
 
@@ -40,15 +48,11 @@ class Provider(ABC):
 	def raw_name(self):
 		pass
 
-	@abstractmethod
-	def exe_name(self):
-		pass
-
 	def set_exe(self, exe):
-		self._exe = exe
+		self.exe = exe
 	
 	def exe(self, string):
-		self._exe("{0} {1}".format(self.exe_name, string))
+		self.exe(string)
 
 	def __enter__(self):
 		self.on()
