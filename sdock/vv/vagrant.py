@@ -210,7 +210,7 @@ end
 	box=self.box,
 	shell_scripts="\n		".join(shell_scripts),
 	choco_script=self.prep_choco_packages()
-)
+))
 			return foil
 
 		def status(self):
