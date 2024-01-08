@@ -151,7 +151,7 @@ delete:
 				return """win10.vm.provision "shell", inline: <<-SHELL\n{0}\nSHELL""".format("\n".join(contents))
 
 		def prep_choco_packages(self):
-			if len(choco_packages) > 0:
+			if len(self.choco_packages) > 0:
 				return self.shell_wrap(
 					"""[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" """,
 					"""iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)""",
