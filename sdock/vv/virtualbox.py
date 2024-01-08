@@ -6,26 +6,19 @@ class app(Provider):
 	def __init__(self):
 		super().__init__()
 		self.name = None
-		self.use_sudo = False
 
 	@property
 	def raw_name(self):
 		return "virtualbox"
 
 	def exe_name(self):
-		if self.use_sudo:
-			return "sudo VBoxManage"
-		else:
-			return "VBoxManage"
+		return "VBoxManage"
 
 	def install(self):
 		return
 
 	def uninstall(self):
 		return
-
-	def set_sudo(self, sudo_flag=False):
-		self.use_sudo = sudo_flag
 
 	def vagrant_string(self):
 		return """

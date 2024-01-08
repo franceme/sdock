@@ -79,17 +79,10 @@ delete:
 			name="N/A", state="uninstantiated", provider="N/A"
 		)
 		save_files: List = field(default_factory=lambda: [])
-		use_sudo:bool=False
 		prep_vagrant:bool=False
 		_date_diff:str = None
 
 		def __post_init__(self):
-			nu_path = "/usr/bin/vagrant_og"
-			og_path = "/usr/bin/vagrant"
-			if self.prep_vagrant and not os.path.exists(nu_path):
-				self.exe("sudo mv {0} {1}".format(og_path, nu_path))
-				self.exe("""sudo echo "#!/bin/bash\n/usr/bin/vagrant_og $@ " """)
-
 			if self.provider is None or self.provider.raw_name != "virtualbox":
 				raise Exception("Vagrant only supports virtualbox at this time")
 
@@ -102,8 +95,6 @@ delete:
 
 		def exe(self, cmd:str):
 			string = "{0} {1}".format(self.vagrant_exe, cmd)
-			if self.use_sudo:
-				string = "sudo " + string
 			print(string)
 			mystring.string(string).exec()
 
