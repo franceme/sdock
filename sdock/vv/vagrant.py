@@ -146,7 +146,7 @@ delete:
 				return """win10.vm.provision "shell", inline: <<-SHELL\n{0}\nSHELL""".format("\n".join(contents))
 
 		def prep_choco_packages(self):
-			return shell_wrap(
+			return self.shell_wrap(
 				"""[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" """,
 				"""iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)""",
 				*[
@@ -191,7 +191,7 @@ Disable-NetAdapter -Name "*" -Confirm:$false
 			if len(self.python_packages) > 0:
 				self.choco_packages += ["python3.8"]
 				shell_scripts += [
-					shell_wrap("C:\\\\Python38\\\\python -m pip install --upgrade pip {0} ".format(" ".join(self.python_packages)))
+					self.shell_wrap("C:\\\\Python38\\\\python -m pip install --upgrade pip {0} ".format(" ".join(self.python_packages)))
 				]
 
 			with open(foil, "w+") as writer:
