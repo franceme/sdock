@@ -24,11 +24,8 @@ class app(Provider):
 		offset_strings = []
 		if timeoffset:
 			offset_strings = [
-				"setextradata {0} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.name),
-				"modifyvm {0} --biossystemtimeoffset {1}".format(
-					self.name, 
-					str(str(timeoffset).split(".")[0])
-				)
+				"""vb.customize ["setextradata", :id, "VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", 1]""",
+				"""vb.customize [ "modifyvm", :id, "--biossystemtimeoffset","{0}" ] """.format(str(str(timeoffset).split(".")[0]))
 			]
 		return """
 win10.vm.provider :virtualbox do |vb|
