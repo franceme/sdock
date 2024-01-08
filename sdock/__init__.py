@@ -1,1 +1,1 @@
-from vv import vagrant, virtualbox
+from .vv import vagrant, virtualbox
