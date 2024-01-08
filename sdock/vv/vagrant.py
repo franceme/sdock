@@ -79,6 +79,7 @@ delete:
 			name="N/A", state="uninstantiated", provider="N/A"
 		)
 		save_files: List = field(default_factory=lambda: [])
+		use_sudo:bool=False
 		_date_diff:str = None
 
 		def __post_init__(self):
@@ -93,7 +94,10 @@ delete:
 			super().__init__()
 
 		def exe(self, cmd:str):
-			mystring.string("{0} {1}".format(self.vagrant_exe, cmd)).exec()
+			string = "{0} {1}".format(self.vagrant_exe, cmd)
+			if self.use_sudo:
+				string = "sudo " + string
+			mystring.string(string).exec()
 
 		def install(self):
 			self.exe("wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg")
