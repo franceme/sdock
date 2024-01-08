@@ -60,7 +60,7 @@ from importlib.metadata import version
 from datetime import datetime
 
 try:
-	if version('sdock') < '0.1.69':
+	if version('sdock') < '0.1.70':
 		raise Exception("Upgrade the version")
 except:
 	os.system("{0} -m pip install --upgrade sdock".format(sys.executable))
@@ -98,9 +98,9 @@ elif args.stop:
 elif args.clean:
 	box.clean()
 		"""
-		box:str="talisker/windows10pro"
 		name:str
 		provider:Provider
+		box:str="talisker/windows10pro"
 		install:bool=False
 		uninstall:bool=False
 		remove:bool=False
@@ -310,4 +310,6 @@ end
 			self.exe("yes|rm -r .vagrant/")
 
 
-except:pass
+except Exception as e:
+	print("Exception: {0}".format(e))
+	pass
