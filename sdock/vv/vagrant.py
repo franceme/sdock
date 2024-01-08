@@ -80,6 +80,7 @@ delete:
 		)
 		save_files: List = field(default_factory=lambda: [])
 		prep_vagrant:bool=False
+		use_sudo:bool=False
 		_date_diff:str = None
 
 		def __post_init__(self):
@@ -91,7 +92,7 @@ delete:
 				self.provider.set_exe(self.exe)
 
 			self.hidden_status=self.set_status("uninstantiated")
-			super().__init__(quiet_stdout=False,quiet_stderr=False)
+			super(prefix_sudo=use_sudo).__init__(quiet_stdout=False,quiet_stderr=False)
 
 		def exe(self, cmd:str):
 			string = "{0} {1}".format(self.vagrant_exe, cmd)
