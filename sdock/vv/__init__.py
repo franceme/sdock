@@ -47,7 +47,7 @@ class Provider(ABC):
 		self._exe = exe
 	
 	def exe(self, string):
-		self._exe("{0} {1}".format(self.exe_name, string))
+		self._exe("{0} {1}".format(self.exe_name(), string))
 
 	def __enter__(self):
 		self.on()
