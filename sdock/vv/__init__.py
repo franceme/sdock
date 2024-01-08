@@ -34,10 +34,6 @@ class Provider(ABC):
 	def off(self):
 		pass
 
-	@abstractmethod
-	def set_sudo(self, sudo_flag=False):
-		pass
-
 	@property
 	@abstractmethod
 	def raw_name(self):
