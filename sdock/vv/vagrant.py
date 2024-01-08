@@ -99,7 +99,7 @@ delete:
 				cmd = "{0} {1}".format(self.vagrant_exe, cmd)
 
 			if self.use_sudo:
-				cmd = "sudo {1}".format(cmd)
+				cmd = "sudo {0}".format(cmd)
 
 			mystring.string(cmd).exec()
 
