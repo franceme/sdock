@@ -240,7 +240,8 @@ end
 		def clean(self):
 			try:self.destroy()
 			except:pass
-			os.remove("Vagrantfile")
+			try:os.remove("Vagrantfile")
+			except:pass
 		
 		def no_gui(self):
 			if os.path.exists("Vagrantfile"):
