@@ -279,7 +279,8 @@ end
 				self.set_status("provider-manipulation-started")
 
 				if self.vmdate is not None:
-					self.provider.set_date(self.vmdate)
+					#self.provider.set_date(self.vmdate)
+					self.provider.set_offset(self.diff_ms)
 					self.set_status("vm-date-set")
 
 				if self.disablehosttime:

@@ -45,6 +45,12 @@ end
 		self.exe("modifyvm {0} --biossystemtimeoffset {1}".format(self.name, 
 			str((datetime_value - datetime.datetime.now()).total_seconds())
 		))
+	
+	def set_offset(self, value):
+		self.exe("modifyvm {0} --biossystemtimeoffset {1}".format(
+			self.name, 
+			str(str(value).split(".")[0])
+		))
 
 	def disable_network(self):
 		self.exe("modifyvm {0} --nic1 null".format(self.name))
