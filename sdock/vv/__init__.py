@@ -2,7 +2,7 @@ import os,sys
 from abc import ABC, abstractmethod
 
 def datetime_valid(dt_str):
-	import datetime
+	from datetime import datetime
 	try:
 		datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
 	except:
