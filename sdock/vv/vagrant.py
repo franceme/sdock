@@ -104,23 +104,23 @@ elif args.clean:
 		install:bool=False
 		uninstall:bool=False
 		remove:bool=False
-		disablehosttime = True
-		disablenetwork = True
-		vmdate = None
-		cpu = 2
-		ram = 4096
-		uploadfiles = []
-		choco_packages = []
-		python_packages = []
-		scripts_to_run = []
-		vagrant_exe = "vagrant"
-		vb_box_exe = "VBoxManage"
-		headless = False
-		hidden_status=og_vagrant.Status(
+		disablehosttime:bool = True
+		disablenetwork:bool = True
+		vmdate:datetime.datetime = None
+		cpu:int = 2
+		ram:int = 4096
+		uploadfiles:str = []
+		choco_packages:str = []
+		python_packages:str = []
+		scripts_to_run:str = []
+		vagrant_exe:str = "vagrant"
+		vb_box_exe:str = "VBoxManage"
+		headless:bool = False
+		hidden_status:str=og_vagrant.Status(
 			name="N/A", state="uninstantiated", provider="N/A"
 		)
-		save_files = []
-		_date_diff = None
+		save_files:str = []
+		_date_diff:str = None
 
 		def __post_init__(self):
 			if self.provider is None or self.provider.raw_name != "virtualbox":
