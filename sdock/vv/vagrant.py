@@ -97,7 +97,10 @@ delete:
 		def exe(self, cmd:str,provider_call:bool=False):
 			if not provider_call:
 				cmd = "{0} {1}".format(self.vagrant_exe, cmd)
-			print(cmd)
+
+			if self.use_sudo:
+				cmd = "sudo {1}".format(cmd)
+
 			mystring.string(cmd).exec()
 
 		def install(self):
