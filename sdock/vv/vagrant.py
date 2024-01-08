@@ -91,12 +91,13 @@ delete:
 				self.provider.set_exe(self.exe)
 
 			self.hidden_status=self.set_status("uninstantiated")
-			super().__init__()
+			super().__init__(quiet_stdout=False,quiet_stderr=False)
 
 		def exe(self, cmd:str):
 			string = "{0} {1}".format(self.vagrant_exe, cmd)
 			if self.use_sudo:
 				string = "sudo " + string
+			print(string)
 			mystring.string(string).exec()
 
 		def install(self):
