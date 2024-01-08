@@ -1,6 +1,5 @@
 import os,sys
 from abc import ABC, abstractmethod
-import vagrant_v0,vagrant_v1,vagrant_v2
 
 def datetime_valid(dt_str):
 	import datetime
@@ -70,5 +69,3 @@ class Provider(ABC):
 				self.on_func()
 
 		return stub(self.on, self.off)
-
-vagrant = vagrant_v2.vagrant
