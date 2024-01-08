@@ -234,7 +234,9 @@ end
 				self.hidden_status = og_vagrant.Status(name=self.name, state=state, provider=self.provider.raw_name)
 
 		def clean(self):
-			self.destroy()
+			try:self.destroy()
+			except:pass
+			os.remove("Vagrantfile")
 
 		def off(self):
 			self.halt(force=True)
