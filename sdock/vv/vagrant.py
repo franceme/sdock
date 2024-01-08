@@ -89,15 +89,16 @@ delete:
 
 			if self.provider:
 				self.provider.name = self.name
-				self.provider.set_exe(self.exe)
+				self.provider.set_exe(lambda cmd:self.exe(cmd, True))
 
 			self.hidden_status=self.set_status("uninstantiated")
 			super().__init__(quiet_stdout=False,quiet_stderr=False,prefix_sudo=self.use_sudo)
 
-		def exe(self, cmd:str):
-			string = "{0} {1}".format(self.vagrant_exe, cmd)
-			print(string)
-			mystring.string(string).exec()
+		def exe(self, cmd:str,provider_call:bool=False):
+			if not provider_call:
+				cmd = "{0} {1}".format(self.vagrant_exe, cmd)
+			print(cmd)
+			mystring.string(cmd).exec()
 
 		def install(self):
 			self.exe("wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg")
