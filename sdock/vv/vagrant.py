@@ -227,7 +227,7 @@ end
 
 		def status(self):
 			if self.hidden_status is None:
-				return super.status()
+				return super().status()
 			return self.hidden_status
 		
 		def set_status(self, state=None):
