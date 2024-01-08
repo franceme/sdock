@@ -110,17 +110,17 @@ elif args.clean:
 		vmdate:str = None
 		cpu:int = 2
 		ram:int = 4096
-		uploadfiles:str = []
-		choco_packages:str = []
-		python_packages:str = []
-		scripts_to_run:str = []
+		uploadfiles: List = field(default_factory=lambda: [])
+		choco_packages: List = field(default_factory=lambda: [])
+		python_packages: List = field(default_factory=lambda: [])
+		scripts_to_run: List = field(default_factory=lambda: [])
 		vagrant_exe:str = "vagrant"
 		vb_box_exe:str = "VBoxManage"
 		headless:bool = False
 		hidden_status:str=og_vagrant.Status(
 			name="N/A", state="uninstantiated", provider="N/A"
 		)
-		save_files:str = []
+		save_files: List = field(default_factory=lambda: [])
 		_date_diff:str = None
 
 		def __post_init__(self):
