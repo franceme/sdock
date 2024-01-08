@@ -86,7 +86,7 @@ delete:
 		def __post_init__(self):
 			nu_path = "/usr/bin/vagrant_og"
 			og_path = "/usr/bin/vagrant"
-			if prep_vagrant and not os.path.exists(nu_path):
+			if self.prep_vagrant and not os.path.exists(nu_path):
 				self.exe("sudo mv {0} {1}".format(og_path, nu_path))
 				self.exe("""sudo echo "#!/bin/bash\n/usr/bin/vagrant_og $@ " """)
 
