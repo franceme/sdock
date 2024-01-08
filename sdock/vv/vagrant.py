@@ -204,11 +204,11 @@ elif args.clean:
 			return self._date_diff
 
 		@property
-		def diff_days():
+		def diff_days(self):
 			return self.diff.days
 
 		@property
-		def diff_ms():
+		def diff_ms(self):
 			return round(self.diff.total_seconds() * 1000)
 
 		def add_file_to_box(self, foil, directory="C:\\\\Users\\\\vagrant\\\\Desktop"):
@@ -256,12 +256,12 @@ end
 )
 			return foil
 
-		def status():
+		def status(self):
 			if self.hidden_status is None:
 				return super.status()
 			return self.hidden_status
 		
-		def set_status(state=None):
+		def set_status(self, state=None):
 			if state is None:
 				self.hidden_status = None
 			else:
