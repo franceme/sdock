@@ -237,6 +237,24 @@ end
 			try:self.destroy()
 			except:pass
 			os.remove("Vagrantfile")
+		
+		def no_gui(self):
+			if os.path.exists("Vagrantfile"):
+				from fileinput import FileInput as finput
+				with finput("Vagrantfile", inplace=True,backup=None) as lines:
+					for line in lines:
+						if "vb.gui = true" in line:
+							line = line.replace("true","false") 
+						print(line,end='')
+		
+		def yes_gui(self):
+			if os.path.exists("Vagrantfile"):
+				from fileinput import FileInput as finput
+				with finput("Vagrantfile", inplace=True,backup=None) as lines:
+					for line in lines:
+						if "vb.gui = false" in line:
+							line = line.replace("false","true") 
+						print(line,end='')
 
 		def off(self):
 			self.halt(force=True)
@@ -246,6 +264,8 @@ end
 			if not os.path.exists("Vagrantfile"):
 				self.write_vagrant_file()
 			self.set_status()
+
+			self.no_gui()
 
 			self.up()
 			last_status = self.status()
@@ -265,6 +285,8 @@ end
 				if self.disablenetwork:
 					self.provider.disable_network()
 					self.set_status("network-disabled")
+				
+				self.yes_gui()
 
 			self.set_status("provider-manipulation-completed")
 			self.set_status(None)
