@@ -1,3 +1,4 @@
+from datetime import datetime
 from dataclasses import dataclass, field
 import os,sys
 from . import Provider
@@ -60,7 +61,7 @@ from importlib.metadata import version
 from datetime import datetime
 
 try:
-	if version('sdock') < '0.1.70':
+	if version('sdock') < '0.1.72':
 		raise Exception("Upgrade the version")
 except:
 	os.system("{0} -m pip install --upgrade sdock".format(sys.executable))
