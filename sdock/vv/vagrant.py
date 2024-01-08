@@ -10,7 +10,7 @@ try:
 	import mystring
 
 	@dataclass
-	class vagrant(og_vagrant.Vagrant): #ogvag.Vagrant #
+	class app(og_vagrant.Vagrant): #ogvag.Vagrant #
 		"""Help Info
 # The contents of the Makefile that made it work
 uninstall: #https://developer.hashicorp.com/vagrant/docs/installation/uninstallation
@@ -60,7 +60,7 @@ from importlib.metadata import version
 from datetime import datetime
 
 try:
-	if version('sdock') < '0.1.68':
+	if version('sdock') < '0.1.69':
 		raise Exception("Upgrade the version")
 except:
 	os.system("{0} -m pip install --upgrade sdock".format(sys.executable))
@@ -69,10 +69,10 @@ from sdock.vv import *
 #Choco Packages: https://community.chocolatey.org/packages
 
 box_name = "tempbox"
-box = vagrant(
+box = vagrant.app(
 	box="talisker/windows10pro",
 	name=box_name,
-	provider=Provider.virtualbox(),
+	provider=virtualbox.app(),
 	disablehosttime = True,
 	disablenetwork = True,
 	vmdate = datetime(year=2023, month=1, day=10, hour=3, minute=0, second=0),
