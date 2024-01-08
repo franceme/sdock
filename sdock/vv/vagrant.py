@@ -107,7 +107,7 @@ elif args.clean:
 		remove:bool=False
 		disablehosttime:bool = True
 		disablenetwork:bool = True
-		vmdate:datetime.datetime = None
+		vmdate:str = None
 		cpu:int = 2
 		ram:int = 4096
 		uploadfiles:str = []
