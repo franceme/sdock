@@ -167,7 +167,7 @@ delete:
 		@property
 		def diff(self):
 			if self._date_diff is None:
-				self._date_diff = (self.vmdate - datetime.now().date())
+				self._date_diff = (self.vmdate - datetime.now())
 			return self._date_diff
 
 		@property
