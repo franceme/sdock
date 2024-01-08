@@ -176,7 +176,8 @@ delete:
 
 		@property
 		def diff_ms(self):
-			return round(self.diff.total_seconds() * 1000)
+			import math
+			return math.trunc(round(self.diff.total_seconds() * 1000))
 
 		def add_file_to_box(self, foil, directory="C:\\\\Users\\\\vagrant\\\\Desktop"):
 			return """ win10.vm.provision "file", source: "{0}", destination: "{1}\\\\{0}" """.format(foil, directory)
