@@ -20,13 +20,23 @@ class app(Provider):
 	def uninstall(self):
 		return
 
-	def vagrant_string(self):
+	def vagrant_string(self, timeoffset=None):
+		offset_strings = []
+		if timeoffset:
+			offset_strings = [
+				"setextradata {0} VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1".format(self.name),
+				"modifyvm {0} --biossystemtimeoffset {1}".format(
+					self.name, 
+					str(str(timeoffset).split(".")[0])
+				)
+			]
 		return """
 win10.vm.provider :virtualbox do |vb|
 	vb.name = "{0}"
 	vb.gui = true
+	{1}
 end
-""".format(self.name)
+""".format(self.name,"\n	".join(offset_strings))
 
 	def on(self):
 		self.exe("startvm {0}".format(self.name))

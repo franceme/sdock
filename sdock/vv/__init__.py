@@ -19,6 +19,10 @@ class Provider(ABC):
 		pass
 
 	@abstractmethod
+	def vagrant_string(self, timeoffset=None):
+		pass
+
+	@abstractmethod
 	def disable_network(self):
 		pass
 

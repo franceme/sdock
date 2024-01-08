@@ -208,6 +208,7 @@ Disable-NetAdapter -Name "*" -Confirm:$false
 			with open(foil, "w+") as writer:
 				writer.write("""# -*- mode: ruby -*- 
 # vi: set ft=ruby :
+require 'time'
 Vagrant.configure("2") do |config|
 	config.vm.box = "{name}"
 	config.vm.define "win10" do |win10| 
@@ -222,7 +223,7 @@ end
 	box=self.box,
 	shell_scripts="\n		".join(shell_scripts),
 	choco_script=self.prep_choco_packages(),
-	provider_script=self.provider.vagrant_string()
+	provider_script=self.provider.vagrant_string(self.diff_ms)
 ))
 			return foil
 
