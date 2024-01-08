@@ -208,13 +208,15 @@ Vagrant.configure("2") do |config|
 		win10.vm.box = "{box}"
 {choco_script}
 {shell_scripts}
+{provider_script}
 	end
 end
 """.format(
 	name=self.name,
 	box=self.box,
 	shell_scripts="\n		".join(shell_scripts),
-	choco_script=self.prep_choco_packages()
+	choco_script=self.prep_choco_packages(),
+	provider_script=self.provider.vagrant_string()
 ))
 			return foil
 
