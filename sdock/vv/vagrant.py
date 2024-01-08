@@ -54,13 +54,15 @@ delete:
 
 # How this works with the file
 import os,sys
+from importlib.metadata import version
 from datetime import datetime
 
 try:
-	from sdock.vvv import *
+	if version('sdock') < '0.1.51':
+		raise Exception("Upgrade the version")
 except:
 	os.system("{0} -m pip install --upgrade sdock".format(sys.executable))
-	from sdock.vvv import *
+from sdock.vvv import *
 
 #Choco Packages: https://community.chocolatey.org/packages
 
