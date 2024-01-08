@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-import os,sys,Provider
+import os,sys
+from . import Provider
 
 #https://github.com/pycontribs/python-vagrant/blob/main/src/vagrant/__init__.py#L202
 #https://github.com/pycontribs/python-vagrant/tree/main
@@ -53,16 +54,17 @@ delete:
 	VBoxManage unregistervm --delete "$$name"
 
 # How this works with the file
+#!/usr/bin/env python3
 import os,sys
 from importlib.metadata import version
 from datetime import datetime
 
 try:
-	if version('sdock') < '0.1.51':
+	if version('sdock') < '0.1.68':
 		raise Exception("Upgrade the version")
 except:
 	os.system("{0} -m pip install --upgrade sdock".format(sys.executable))
-from sdock.vvv import *
+from sdock.vv import *
 
 #Choco Packages: https://community.chocolatey.org/packages
 
@@ -73,7 +75,7 @@ box = vagrant(
 	provider=Provider.virtualbox(),
 	disablehosttime = True,
 	disablenetwork = True,
-	vmdate = datetime(year=2023, month=01, day=10, hour=03, minute=0, second=0),
+	vmdate = datetime(year=2023, month=1, day=10, hour=3, minute=0, second=0),
 	python_packages = ["hugg"],
 )
 

@@ -1,6 +1,6 @@
 import datetime
-import os,sys,Provider,mystring
-
+import os,sys,mystring
+from . import Provider
 
 class app(Provider):
 	def __init__(self):
