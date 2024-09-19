@@ -20,7 +20,7 @@ long_description = pathlib.Path(f"{here}/README.md").read_text(encoding='utf-8')
 REQUIRES_PYTHON = '>=3.7.0'
 RELEASE = "?"
 entry_point = f"src.{NAME}"
-VERSION = "0.1.108"
+VERSION = "0.1.110"
 
 def zip_program(outputName:str = f"{NAME}.zip"):
 	#http://blog.ablepear.com/2012/10/bundling-python-files-into-stand-alone.html
@@ -110,10 +110,11 @@ setup(
 	packages=find_packages(
 		exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
 	entry_points={
+		'console_scripts': ['mybinary=sdock.cli:main'],
 	},
 	install_requires=[
 		"mystring",
-		"docker"
+		"docker",
 	],
 	extras_require=extra_requires,
 	include_package_data=True,

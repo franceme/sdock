@@ -21,3 +21,5 @@ machineid
 **/sample.jsonl
 **/WaveNetExploration
 temp/
+**/.vagrant/
+**/*.box
