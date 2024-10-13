@@ -1,37 +1,24 @@
 import os,sys
 
 class vrunn(object):
-    def __init__(self, host:str=None,runner=None,do_destroy:bool=True):
+    def __init__(self, host:list=[]):
         self.host = host
-        self.do_destroy = do_destroy
-        if not runner:
-            def run(string):
-                print(string)
-                try:os.system(string)
-                except Exception as e:
-                    print(e)
-                return None
-            runner = run
-        self.runner = runner
+        self.host_statuses={x:"NONE" for x in self.host}
 
-    def cmd(self, string, prefix="", suffix=""):
-        command = " ".join([
-            prefix,
-            string,
-            host,
-            suffix
-        ])
-        command = str(command).strip()
-        if not isinstance(self.host, list):
-            self.host = [self.host]
+    def __cmd(self, string):
+        print(string)
+        try:os.system(string)
+        except:pass
 
-        output = {}
+    def setup(self):
         for host in self.host:
-            output[host] = self.runner(command)
-        return output
+            self.__cmd("vagrant up {0}".format(host))
+            self.host_statuses[host] = "UP"
 
-    def up(self, prefix="", suffix=""):
-        return self.cmd(string="up", prefix=prefix, suffix=suffix)
+    def destroy(self):
+        for host in self.host:
+            self.__cmd("vagrant destroy {0}".format(host))
+            self.host_statuses[host] = "NONE"
 
     def down(self):
         return self.cmd(string="down", prefix=prefix, suffix=suffix)

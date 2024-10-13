@@ -80,6 +80,8 @@ class dock:
 			"{0} rmi $({0} images -q)".format(self.docker),
 			"{0} volume rm $({0} volume ls -q)".format(self.docker),
 			"{0} image prune -f".format(self.docker),
+			"{0} image prune -a".format(self.docker),
+			"{0} image prune -f -a".format(self.docker),
 			"{0} container prune -f".format(self.docker),
 			"{0} builder prune -f -a".format(self.docker)
 		])

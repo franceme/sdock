@@ -138,32 +138,6 @@ delete:
 			# https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/vboxmanage-export.html
 			self.exe("{0} snapshot {1} export {2} --ovf10 --options manifest,iso,nomacs -o {3}".format(self.vb_box_exe, self.name,ovaname))
 
-		def create_runner(self):
-			foil = "on_login.cmd"
-			# https://jd-bots.com/2021/05/15/how-to-run-powershell-script-on-windows-startup/
-			# https://stackoverflow.com/questions/20575257/how-do-i-run-a-powershell-script-when-the-computer-starts
-			with open(foil, "w+") as writer:
-				writer.write("""powershell -windowstyle hidden C:\\\\Users\\\\vagrant\\\\Desktop\\\\on_start.ps1""")
-			self.uploadfiles += [foil]
-			return foil
-
-		def shell_wrap(self, *contents):
-			if len(contents) == 1:
-				return """win10.vm.provision :shell, :inline => "{0}" """.format(contents[0])
-			else:
-				return """win10.vm.provision "shell", inline: <<-SHELL\n{0}\nSHELL""".format("\n".join(contents))
-
-		def prep_choco_packages(self):
-			if len(self.choco_packages) > 0:
-				return self.shell_wrap(
-					"""[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls" """,
-					"""iex (wget 'https://chocolatey.org/install.ps1' -UseBasicParsing)""",
-					*[
-						"choco install -y {0}".format(x) for x in self.choco_packages
-					]
-				)
-			return ""
-
 		@property
 		def diff(self):
 			if self._date_diff is None:
@@ -193,38 +167,6 @@ Disable-NetAdapter -Name "*" -Confirm:$false
 {0}
 """.format("\n".join(contents)))
 			self.uploadfiles += [foil]
-			return foil
-
-		def write_vagrant_file(self):
-			foil = "Vagrantfile"
-
-			shell_scripts = []
-			if len(self.python_packages) > 0:
-				self.choco_packages += ["python3.8"]
-				shell_scripts += [
-					self.shell_wrap("C:\\\\Python38\\\\python -m pip install --upgrade pip {0} ".format(" ".join(self.python_packages)))
-				]
-
-			with open(foil, "w+") as writer:
-				writer.write("""# -*- mode: ruby -*- 
-# vi: set ft=ruby :
-require 'time'
-Vagrant.configure("2") do |config|
-	config.vm.box = "{name}"
-	config.vm.define "win10" do |win10| 
-		win10.vm.box = "{box}"
-{choco_script}
-{shell_scripts}
-{provider_script}
-	end
-end
-""".format(
-	name=self.name,
-	box=self.box,
-	shell_scripts="\n		".join(shell_scripts),
-	choco_script=self.prep_choco_packages(),
-	provider_script=self.provider.vagrant_string(self.diff_ms)
-))
 			return foil
 
 		def status(self):
