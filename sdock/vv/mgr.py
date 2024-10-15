@@ -1,4 +1,17 @@
+from enum import Enum,auto
 import os,sys
+from . import Provider
+from . import virtualbox
+
+class vrunn_status(Enum):
+    EMPTY = auto()
+    CREATED = auto()
+    OFF = auto()
+    ON = auto()
+
+class vhost(object):
+    def __init__(self, host_name:str=None, provider:Provider=virtualbox):
+        pass
 
 class vrunn(object):
     def __init__(self, host:list=[]):
@@ -10,15 +23,18 @@ class vrunn(object):
         try:os.system(string)
         except:pass
 
+    def v(self, string):
+        self.__cmd("vagrant {0}".format(string))
+
     def setup(self):
         for host in self.host:
-            self.__cmd("vagrant up {0}".format(host))
-            self.host_statuses[host] = "UP"
+            self.v("up {0}".format(host))
+            self.host_statuses[host] = vrunn_status.ON
 
     def destroy(self):
         for host in self.host:
             self.__cmd("vagrant destroy {0}".format(host))
-            self.host_statuses[host] = "NONE"
+            self.host_statuses[host] = vrunn_status.EMPTY
 
     def down(self):
         return self.cmd(string="down", prefix=prefix, suffix=suffix)
